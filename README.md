@@ -22,7 +22,7 @@ Trên Window:
 ```bash
 copy .env.example .env
 ```
-Lưu ý: Hiện tại dự án chưa kết nối đến cơ sở dữ liệu, hãy giữ các cấu hình sau trong file .env:
+Lưu ý: Hiện tại dự án chưa kết nối đến cơ sở dữ liệu, hãy giữ các cấu hình trong file .env sau khi copy từ .env.example và chỉ thay đổi những đoạn sau:
 ```ini
 SESSION_DRIVER=file
 QUEUE_CONNECTION=sync
