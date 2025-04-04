@@ -14,8 +14,13 @@ cd <tên-thư-mục-project>
 composer install
 ```
 ### 3. Tạo file môi trường .env
+Trên Linux/MacOS:
 ```bash
 cp .env.example .env
+```
+Trên Window:
+```bash
+copy .env.example .env
 ```
 Lưu ý: Hiện tại dự án chưa kết nối đến cơ sở dữ liệu, hãy giữ các cấu hình sau trong file .env:
 ```ini
