@@ -40,7 +40,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function setPasswordAttribute($value)
     {
-        $this->attributes['password'] = Hash::make($value);
+        $this->attributes['password'] = $value;
     }
 
     // JWT functions
