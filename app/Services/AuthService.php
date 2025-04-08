@@ -3,24 +3,24 @@
 namespace App\Services;
 
 use App\Services\AuthServiceInterface;
-use App\Repositories\UserRepositoryInterface;
+use App\Repositories\AuthRepositoryInterface;
 use App\DTOs\AuthDTO;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Hash;
 
 class AuthService implements AuthServiceInterface
 {
-    protected $userRepository;
+    protected $authRepository;
     
-    public function __construct(UserRepositoryInterface $userRepository)
+    public function __construct(AuthRepositoryInterface $authRepository)
     {
-        $this->userRepository = $userRepository;
+        $this->authRepository = $authRepository;
     }
     
     public function register(AuthDTO $authDTO)
     {
         $userData = $authDTO->toArray();
-        $user = $this->userRepository->create($userData);
+        $user = $this->authRepository->create($userData);
         
         return [
             'message' => 'User registered successfully',
@@ -30,7 +30,7 @@ class AuthService implements AuthServiceInterface
     
     public function login(AuthDTO $authDTO)
     {
-        $user = $this->userRepository->findByEmail($authDTO->email);
+        $user = $this->authRepository->findByEmail($authDTO->email);
         
         if (!$user || !Hash::check($authDTO->password, $user->password)) {
             return [

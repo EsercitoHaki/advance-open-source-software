@@ -6,12 +6,6 @@ use App\Http\Controllers\Api\V1\UserController;
 
 $version = config('api.version');
 
-// Route::get('/v1/test', [UserController::class, 'index']);
-
-// Route::prefix($version)->group(function () {
-//     Route::get('/test', [UserController::class, 'index']);
-// });
-
 Route::prefix($version)->group(function () use ($version) {
     $routePath = base_path("routes/{$version}");
 

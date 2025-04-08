@@ -25,7 +25,7 @@ class User extends Authenticatable implements JWTSubject
     protected $keyType = 'string';
 
     protected $fillable = [
-        'username', 'email', 'password', 'first_name', 'last_name', 'role_id',
+        'username', 'email', 'password', 'first_name', 'last_name', 'avatar', 'role_id',
         'coins', 'lives', 'current_streak', 'longest_streak', 'is_active'
     ];
 
@@ -40,6 +40,12 @@ class User extends Authenticatable implements JWTSubject
 
     public function setPasswordAttribute($value)
     {
+        // if (!empty($value) && !Hash::check($value, $this->attributes['password'])) {
+        //     $this->attributes['password'] = Hash::make($value);
+        // }
+        // else {
+        //     $this->attributes['password'] = $value;
+        // }
         $this->attributes['password'] = $value;
     }
 
@@ -54,16 +60,16 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'is_active' => 'boolean',
+        'registration_date' => 'datetime',
+        'email_verified_at' => 'datetime',
+    ];
+
+    public function role()
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        return $this->belongsTo(Role::class, 'role_id');
     }
 }

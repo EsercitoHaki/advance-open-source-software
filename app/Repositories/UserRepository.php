@@ -3,28 +3,54 @@
 namespace App\Repositories;
 
 use App\Models\User;
-use App\Repositories\BaseRepository;
-use App\Repositories\UserRepositoryInterface;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
+use App\DTOs\UserDTO;
+use Illuminate\Support\Facades\Auth;
 
-class UserRepository extends BaseRepository implements UserRepositoryInterface
+class UserRepository implements UserRepositoryInterface
 {
-    public function __construct(User $model)
+    public function getCurrentUser(): User
     {
-        parent::__construct($model);
+        return Auth::user();
     }
-    
-    public function create(array $data)
+
+    public function updateProfile(User $user, UserDTO $userDTO): User
     {
-        $data['password'] = Hash::make($data['password']);
-        $data['user_id'] = DB::raw('UUID()');
+        $updateData = array_filter([
+            'username' => $userDTO->username,
+            'email' => $userDTO->email,
+            'first_name' => $userDTO->firstName,
+            'last_name' => $userDTO->lastName,
+        ], fn($value) => $value !== null);
+
+        if ($updateData) {
+            $user->update($updateData);
+        }
         
-        return $this->model->create($data);
+        return $user;
     }
-    
-    public function findByEmail(string $email)
+
+    public function updatePassword(User $user, string $password): bool
     {
-        return $this->model->where('email', $email)->first();
+        $user->password = bcrypt($password);
+        return $user->save();
+    }
+
+    public function updateAvatar(User $user, string $avatarPath): User
+    {
+        $user->avatar = $avatarPath;
+        $user->save();
+        
+        return $user;
+    }
+
+    public function updateStats(User $user, array $stats): User
+    {
+        $user->update($stats);
+        return $user;
+    }
+
+    public function getUserById(string $userId): ?User
+    {
+        return User::find($userId);
     }
 }
