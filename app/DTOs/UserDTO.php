@@ -2,6 +2,9 @@
 
 namespace App\DTOs;
 
+use App\Http\Requests\UpdateProfileRequest;
+use App\Models\User; 
+
 class UserDTO 
 {
     public function __construct(
@@ -30,8 +33,8 @@ class UserDTO
         return new self(
             username: $request->get('username'),
             email: $request->get('email'),
-            firstname: $request->get('first_name'),
-            lastname: $request->get('last_name')
+            firstName: $request->get('first_name'),  // Change from firstname to firstName
+            lastName: $request->get('last_name')
         );
     }
 
