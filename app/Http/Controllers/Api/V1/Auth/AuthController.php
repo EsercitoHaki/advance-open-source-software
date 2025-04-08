@@ -19,7 +19,7 @@ class AuthController extends Controller
     
     public function register(RegisterRequest $request)
     {
-        $authDTO = AuthDTO::formRegisterRequest($request->validated());
+        $authDTO = AuthDTO::formArray($request->validated());
         $result = $this->authService->register($authDTO);
         
         return response()->json($result, 201);
@@ -27,7 +27,7 @@ class AuthController extends Controller
     
     public function login(LoginRequest $request)
     {
-        $authDTO = AuthDTO::formLoginRequest($request->validated());
+        $authDTO = AuthDTO::formArray($request->validated());
         $result = $this->authService->login($authDTO);
         
         $statusCode = $result['status'] ?? 200;

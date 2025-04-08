@@ -18,7 +18,8 @@ return new class extends Migration
             $table->string('password', 255)->notNullable();
             $table->string('first_name', 50)->nullable();
             $table->string('last_name', 50)->nullable();
-            $table->unsignedBigInteger('role_id')->default(1); // Mặc định là Student
+            $table->string('avatar')->default('default-avatar.png')->change();
+            $table->unsignedBigInteger('role_id')->default(2); // Can sua lai trong database 
             $table->integer('coins')->default(0);
             $table->integer('lives')->default(5);
             $table->integer('current_streak')->default(0);

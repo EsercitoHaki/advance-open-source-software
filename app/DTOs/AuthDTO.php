@@ -11,17 +11,7 @@ class AuthDTO {
         public readonly ?string $last_name = null
     ) {}
 
-    public static function formLoginRequest(array $data): self {
-        return new self(
-            email: $data['email'],
-            password: $data['password'],
-            username: $data['username'] ?? null,
-            first_name: $data['first_name'] ?? null,
-            last_name: $data['last_name'] ?? null
-        );
-    }
-
-    public static function formRegisterRequest(array $data): self {
+    public static function formArray(array $data): self {
         return new self(
             email: $data['email'],
             password: $data['password'],
