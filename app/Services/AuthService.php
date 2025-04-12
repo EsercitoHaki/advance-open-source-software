@@ -7,6 +7,8 @@ use App\Repositories\AuthRepositoryInterface;
 use App\DTOs\AuthDTO;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
+use App\Exceptions\DataNotFoundException;
 
 class AuthService implements AuthServiceInterface
 {
@@ -20,10 +22,11 @@ class AuthService implements AuthServiceInterface
     public function register(AuthDTO $authDTO)
     {
         $userData = $authDTO->toArray();
-        $user = $this->authRepository->create($userData);
         
+        $user = $this->authRepository->create($userData);
+
         return [
-            'message' => 'User registered successfully',
+            'message' => 'Đăng ký thành công!',
             'user' => $user
         ];
     }
@@ -33,23 +36,20 @@ class AuthService implements AuthServiceInterface
         $user = $this->authRepository->findByEmail($authDTO->email);
         
         if (!$user || !Hash::check($authDTO->password, $user->password)) {
-            return [
-                'error' => 'Invalid credentials',
-                'status' => 401
-            ];
+            throw new DataNotFoundException('Tài khoản hoặc mật khẩu không đúng!');
         }
         
         $token = JWTAuth::fromUser($user);
         
         if (!$token) {
             return [
-                'error' => 'Could not create token',
+                'error' => 'Không thể tạo được token!',
                 'status' => 500
             ];
         }
         
         return [
-            'message' => 'Login successful',
+            'message' => 'Đăng nhập thành công!',
             'user' => $user,
             'token' => $token,
             'status' => 200
