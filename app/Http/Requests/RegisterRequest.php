@@ -14,11 +14,12 @@ class RegisterRequest extends FormRequest
     public function rules()
     {
         return [
-            'username' => 'required|string|max:50|unique:users',
-            'email' => 'required|email|max:100|unique:users',
-            'password' => 'required|string|min:6',
-            'first_name' => 'nullable|string|max:50',
-            'last_name' => 'nullable|string|max:50',
+            'full_name'        => 'nullable|string|max:50',
+            'email'            => 'required|email|max:100|unique:users',
+            'username'         => 'required|string|max:50|unique:users',
+            'password'         => 'required|string|min:6|max:32',
+            'confirm_password' => 'required|same:password',
+            'gender'           => 'nullable|in:male,female,other',
         ];
     }
 
@@ -26,24 +27,27 @@ class RegisterRequest extends FormRequest
     {
         return [
             'username.required' => 'Tên đăng nhập là bắt buộc.',
-            'username.string' => 'Tên đăng nhập phải là chuỗi.',
-            'username.max' => 'Tên đăng nhập không được vượt quá 50 ký tự.',
-            'username.unique' => 'Tên đăng nhập đã tồn tại.',
+            'username.string'   => 'Tên đăng nhập phải là chuỗi.',
+            'username.max'      => 'Tên đăng nhập không được vượt quá 50 ký tự.',
+            'username.unique'   => 'Tên đăng nhập đã tồn tại.',
 
             'email.required' => 'Email là bắt buộc.',
-            'email.email' => 'Email không hợp lệ.',
-            'email.max' => 'Email không được vượt quá 100 ký tự.',
-            'email.unique' => 'Email đã được sử dụng.',
+            'email.email'    => 'Email không hợp lệ.',
+            'email.max'      => 'Email không được vượt quá 100 ký tự.',
+            'email.unique'   => 'Email đã được sử dụng.',
 
             'password.required' => 'Mật khẩu là bắt buộc.',
-            'password.string' => 'Mật khẩu phải là chuỗi.',
-            'password.min' => 'Mật khẩu phải có ít nhất 6 ký tự.',
+            'password.string'   => 'Mật khẩu phải là chuỗi.',
+            'password.min'      => 'Mật khẩu phải có ít nhất 6 ký tự.',
+            'password.max'      => 'Mật khẩu không được vượt quá 32 ký tự.',
 
-            'first_name.string' => 'Họ phải là chuỗi.',
-            'first_name.max' => 'Họ không được vượt quá 50 ký tự.',
+            'confirm_password.required' => 'Vui lòng xác nhận mật khẩu.',
+            'confirm_password.same'     => 'Mật khẩu xác nhận không khớp.',
 
-            'last_name.string' => 'Tên phải là chuỗi.',
-            'last_name.max' => 'Tên không được vượt quá 50 ký tự.',
+            'full_name.string' => 'Họ và tên phải là chuỗi.',
+            'full_name.max'    => 'Họ và tên không được vượt quá 50 ký tự.',
+
+            'gender.in' => 'Giới tính phải là male, female hoặc other.',
         ];
     }
 }

@@ -16,8 +16,8 @@ return new class extends Migration
             $table->string('username', 50)->unique()->notNullable();
             $table->string('email', 100)->unique()->notNullable();
             $table->string('password', 255)->notNullable();
-            $table->string('first_name', 50)->nullable();
-            $table->string('last_name', 50)->nullable();
+            $table->string('full_name', 50)->nullable();
+            $table->enum('gender', ['male', 'female', 'other']);
             $table->string('avatar')->default('default-avatar.png')->change();
             $table->unsignedBigInteger('role_id')->default(2); // Can sua lai trong database 
             $table->integer('coins')->default(0);
