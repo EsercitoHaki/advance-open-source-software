@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateProfileRequest;
 use App\Http\Requests\ChangePasswordRequest;
 use App\Services\UserService;
 use App\DTOs\UserDTO;
+use App\Exceptions\DataNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -21,44 +22,67 @@ class UserController extends Controller
 
     public function profile(): JsonResponse
     {
-        $user = $this->userService->getCurrentUser();
-        
-        return response()->json([
-            'success' => true,
-            'data' => $user
-        ]);
+        try {
+            $user = $this->userService->getCurrentUser();
+            
+            return response()->json([
+                'success' => true,
+                'data' => $user
+            ]);
+        } catch (DataNotFoundException $e) {
+            return response()->json([
+                'error' => true,
+                'message' => 'Không tìm thấy thông tin người dùng',
+            ], 404);
+        } 
     }
 
     public function updateProfile(UpdateProfileRequest $request): JsonResponse
     {
-        $userDTO = UserDTO::fromRequest($request);
-        $updatedUser = $this->userService->updateProfile($userDTO);
-        
-        return response()->json([
-            'success' => true,
-            'message' => 'Profile updated successfully',
-            'data' => $updatedUser
-        ]);
+        try {
+            $userDTO = UserDTO::fromRequest($request);
+            $updatedUser = $this->userService->updateProfile($userDTO);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Cập nhật thông tin thành công',
+                'data' => $updatedUser
+            ]);
+        } catch (DataNotFoundException $e) {
+            return response()->json([
+                'error' => true,
+                'message' => 'Không tìm thấy người dùng để cập nhật',
+            ], 404);
+        }
     }
 
     public function changePassword(ChangePasswordRequest $request): JsonResponse
     {
-        $result = $this->userService->changePassword(
-            $request->get('current_password'),
-            $request->get('new_password')
-        );
-        
-        if (!$result) {
+        try
+        {
+            $result = $this->userService->changePassword(
+                $request->get('current_password'),
+                $request->get('new_password')
+            );
+            
+            if (!$result) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Current password is incorrect'
+                ], 400);
+            }
+            
             return response()->json([
-                'success' => false,
-                'message' => 'Current password is incorrect'
-            ], 400);
+                'success' => true,
+                'message' => 'Password changed successfully'
+            ]);
         }
-        
-        return response()->json([
-            'success' => true,
-            'message' => 'Password changed successfully'
-        ]);
+        catch (DataNotFoundException $e) {
+            return response()->json([
+                'error' => true,
+                'message' => 'Không tìm thấy thông tin người dùng',
+            ], 404);
+        }
     }
 
     public function uploadAvatar(Request $request): JsonResponse
@@ -80,11 +104,18 @@ class UserController extends Controller
 
     public function getStats(): JsonResponse
     {
-        $stats = $this->userService->getUserStats();
-        
-        return response()->json([
-            'success' => true,
-            'data' => $stats
-        ]);
+        try {
+            $stats = $this->userService->getUserStats();
+            
+            return response()->json([
+                'success' => true,
+                'data' => $stats
+            ]);
+        } catch (DataNotFoundException $e) {
+            return response()->json([
+                'error' => true,
+                'message' => 'Không tìm thấy dữ liệu thống kê',
+            ], 404);
+        }
     }
 }

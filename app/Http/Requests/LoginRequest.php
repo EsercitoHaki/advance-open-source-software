@@ -18,4 +18,17 @@ class LoginRequest extends FormRequest
             'password' => 'required|string',
         ];
     }
+
+    public function messages()
+    {
+        return [
+            'email.required' => 'Email là bắt buộc.',
+            'email.string' => 'Email phải là chuỗi.',
+            'email.email' => 'Email không hợp lệ.',
+            'email.max' => 'Email không được vượt quá 255 ký tự.',
+
+            'password.required' => 'Mật khẩu là bắt buộc.',
+            'password.string' => 'Mật khẩu phải là chuỗi.',
+        ];
+    }
 }

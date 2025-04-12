@@ -6,8 +6,8 @@ Làm theo các bước sau để thiết lập và chạy project:
 
 ### 1. Clone project về máy
 ```bash
-git clone <link-repo>
-cd <tên-thư-mục-project>
+git clone https://github.com/EsercitoHaki/advance-open-source-software.git
+cd advance-open-source-software
 ```
 ### 2. Cài đặt các dependency bằng Composer
 ```bash
@@ -19,16 +19,44 @@ Trên Linux/MacOS:
 cp .env.example .env
 ```
 Trên Window:
-```bash
+```cmd
 copy .env.example .env
 ```
-Lưu ý: Hiện tại dự án chưa kết nối đến cơ sở dữ liệu, hãy giữ các cấu hình trong file .env sau khi copy từ .env.example và chỉ thay đổi những đoạn sau:
+Setup file .env
 ```ini
-SESSION_DRIVER=file
-QUEUE_CONNECTION=sync
+# Version API
+API_VERSION=v1
+
+# Kết nối database
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=eng_test # Đặt tên tùy ý
+DB_USERNAME=root
+DB_PASSWORD=
+
+SESSION_DRIVER=database
+QUEUE_CONNECTION=database
 CACHE_STORE=file
 ```
 ### 4. Tạo application key
 ```bash
 php artisan key:generate
 ```
+### 5. Setup JWT Authentication
+Chạy lệnh sau để render key jwt
+```bash
+php artisan jwt:secret
+```
+Thêm các cấu hình jwt vào .env
+```bash
+JWT_TTL=3600
+JWT_REFRESH_TTL=2592000
+```
+
+### 6. Tạo Database
+Chạy lệnh sau để Laravel khởi tạo database cũng như bảng trong mysql
+```bash
+php artisan migrate
+```
+
