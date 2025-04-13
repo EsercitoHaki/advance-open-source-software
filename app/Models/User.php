@@ -25,8 +25,18 @@ class User extends Authenticatable implements JWTSubject
     protected $keyType = 'string';
 
     protected $fillable = [
-        'username', 'email', 'password', 'first_name', 'last_name', 'avatar', 'role_id',
-        'coins', 'lives', 'current_streak', 'longest_streak', 'is_active'
+        'username',
+        'email',
+        'password',
+        'full_name',
+        'gender',
+        'avatar',
+        'role_id',
+        'coins',
+        'lives',
+        'current_streak',
+        'longest_streak',
+        'is_active',
     ];
 
     /**
@@ -63,9 +73,12 @@ class User extends Authenticatable implements JWTSubject
     protected $casts = [
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
-        'is_active' => 'boolean',
         'registration_date' => 'datetime',
-        'email_verified_at' => 'datetime',
+        'is_active' => 'boolean',
+        'coins' => 'integer',
+        'lives' => 'integer',
+        'current_streak' => 'integer',
+        'longest_streak' => 'integer',
     ];
 
     public function role()
