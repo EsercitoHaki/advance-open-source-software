@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Models\Lesson;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\Lesson;
-use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class LessonSeeder extends Seeder
 {
@@ -14,62 +14,45 @@ class LessonSeeder extends Seeder
      */
     public function run(): void
     {
-        $now = Carbon::now()->format('Y-m-d');
+        // Tạm thời tắt kiểm tra khóa ngoại
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        
+        // Xóa dữ liệu cũ để tránh trùng lặp
+        Lesson::truncate();
+        
+        // Bật lại kiểm tra khóa ngoại
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
-        // Dữ liệu mẫu cho bài học
+        // Tạo dữ liệu mẫu cho bài học
         $lessons = [
             [
-                'title' => 'Introduction to Laravel',
+                'title' => 'Ngữ pháp tiếng Anh cơ bản',
                 'category' => 'Grammar',
-                'created_date' => $now,
+                'created_date' => '2025-04-10'
             ],
             [
-                'title' => 'Laravel Controllers',
-                'category' => 'Grammar',
-                'created_date' => $now,
-            ],
-            [
-                'title' => 'Eloquent ORM Basics',
+                'title' => 'Từ vựng chủ đề du lịch',
                 'category' => 'Vocabulary',
-                'created_date' => $now,
+                'created_date' => '2025-04-11'
             ],
             [
-                'title' => 'Laravel Blade Templates',
-                'category' => 'Reading',
-                'created_date' => $now,
-            ],
-            [
-                'title' => 'Laravel Authentication',
+                'title' => 'Kỹ năng nghe hiểu',
                 'category' => 'Listening',
-                'created_date' => $now,
+                'created_date' => '2025-04-12'
             ],
             [
-                'title' => 'Laravel Middleware',
-                'category' => 'Grammar',
-                'created_date' => $now,
+                'title' => 'Kỹ năng đọc hiểu',
+                'category' => 'Reading',
+                'created_date' => '2025-04-13'
             ],
             [
-                'title' => 'Laravel Migration & Seeding',
+                'title' => 'Giao tiếp trong kinh doanh',
                 'category' => 'Vocabulary',
-                'created_date' => $now,
-            ],
-            [
-                'title' => 'Laravel API Development',
-                'category' => 'Reading',
-                'created_date' => $now,
-            ],
-            [
-                'title' => 'Laravel Validation',
-                'category' => 'Listening',
-                'created_date' => $now,
-            ],
-            [
-                'title' => 'Laravel Testing',
-                'category' => 'Grammar',
-                'created_date' => $now,
+                'created_date' => '2025-04-14'
             ],
         ];
 
+        // Thêm dữ liệu vào database
         foreach ($lessons as $lesson) {
             Lesson::create($lesson);
         }

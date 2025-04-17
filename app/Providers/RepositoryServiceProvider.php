@@ -11,6 +11,10 @@ use App\Repositories\LessonRepositoryInterface;
 use App\Repositories\LessonRepository;
 use App\Services\LessonServiceInterface;
 use App\Services\LessonService;
+use App\Repositories\QuestionRepositoryInterface;
+use App\Repositories\QuestionRepository;
+use App\Services\QuestionServiceInterface;
+use App\Services\QuestionService;
 
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -30,6 +34,11 @@ class RepositoryServiceProvider extends ServiceProvider
             \App\Repositories\LessonRepository::class
         );
 
+        $this->app->bind(
+            \App\Repositories\QuestionRepositoryInterface::class,
+            \App\Repositories\QuestionRepository::class
+        );
+
         // Đăng ký service bindings
         $this->app->bind(
             \App\Services\AuthServiceInterface::class,
@@ -39,6 +48,11 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(
             \App\Services\LessonServiceInterface::class,
             \App\Services\LessonService::class
+        );
+
+        $this->app->bind(
+            \App\Services\QuestionServiceInterface::class,
+            \App\Services\QuestionService::class
         );
     }
 

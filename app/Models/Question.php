@@ -3,23 +3,23 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Lesson extends Model
+class Question extends Model
 {
     /**
      * Chỉ định tên bảng trong cơ sở dữ liệu
      *
      * @var string
      */
-    protected $table = 'lessons';
+    protected $table = 'questions';
 
     /**
      * Chỉ định khóa chính
      *
      * @var string
      */
-    protected $primaryKey = 'lesson_id';
+    protected $primaryKey = 'question_id';
 
     /**
      * Chỉ định các cột có thể gán giá trị hàng loạt
@@ -27,9 +27,12 @@ class Lesson extends Model
      * @var array
      */
     protected $fillable = [
-        'title',
-        'category',
-        'created_date',
+        'lesson_id',
+        'score',
+        'content',
+        'question_text',
+        // đã loại bỏ correct_answer
+        'explanation',
     ];
 
     /**
@@ -40,19 +43,12 @@ class Lesson extends Model
     public $timestamps = false;
 
     /**
-     * Các giá trị category hợp lệ
+     * Quan hệ với model Lesson
      *
-     * @var array
+     * @return BelongsTo
      */
-    public static $categories = ['Grammar', 'Vocabulary', 'Listening', 'Reading'];
-
-    /**
-     * Quan hệ với model Question
-     *
-     * @return HasMany
-     */
-    public function questions(): HasMany
+    public function lesson(): BelongsTo
     {
-        return $this->hasMany(Question::class, 'lesson_id', 'lesson_id');
+        return $this->belongsTo(Lesson::class, 'lesson_id', 'lesson_id');
     }
 }
