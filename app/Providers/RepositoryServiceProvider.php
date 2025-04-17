@@ -15,6 +15,14 @@ use App\Repositories\QuestionRepositoryInterface;
 use App\Repositories\QuestionRepository;
 use App\Services\QuestionServiceInterface;
 use App\Services\QuestionService;
+use App\Repositories\UserProgressRepositoryInterface;
+use App\Repositories\UserProgressRepository;
+use App\Repositories\OptionRepositoryInterface;
+use App\Repositories\OptionRepository;
+use App\Services\OptionServiceInterface;
+use App\Services\OptionService;
+use App\Services\UserProgressServiceInterface;
+use App\Services\UserProgressService;
 
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -39,6 +47,16 @@ class RepositoryServiceProvider extends ServiceProvider
             \App\Repositories\QuestionRepository::class
         );
 
+        $this->app->bind(
+            \App\Repositories\UserProgressRepositoryInterface::class,
+            \App\Repositories\UserProgressRepository::class
+        );
+
+        $this->app->bind(
+            \App\Repositories\OptionRepositoryInterface::class,
+            \App\Repositories\OptionRepository::class
+        );
+
         // Đăng ký service bindings
         $this->app->bind(
             \App\Services\AuthServiceInterface::class,
@@ -53,6 +71,16 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(
             \App\Services\QuestionServiceInterface::class,
             \App\Services\QuestionService::class
+        );
+
+        $this->app->bind(
+            \App\Services\OptionServiceInterface::class,
+            \App\Services\OptionService::class
+        );
+
+        $this->app->bind(
+            \App\Services\UserProgressServiceInterface::class,
+            \App\Services\UserProgressService::class
         );
     }
 

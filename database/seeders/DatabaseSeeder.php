@@ -23,5 +23,6 @@ class DatabaseSeeder extends Seeder
         // Gọi LessonSeeder trước, vì câu hỏi phụ thuộc vào bài học
         $this->call(LessonSeeder::class);
         $this->call(QuestionSeeder::class);
+        $this->call(OptionSeeder::class);
     }
 }

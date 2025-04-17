@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Services\QuestionServiceInterface;
 use App\Services\LessonServiceInterface;
+use App\Services\OptionServiceInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Exceptions\DataNotFoundException;
@@ -13,13 +14,16 @@ class QuestionController extends Controller
 {
     protected $questionService;
     protected $lessonService;
+    protected $optionService;
 
     public function __construct(
         QuestionServiceInterface $questionService,
-        LessonServiceInterface $lessonService
+        LessonServiceInterface $lessonService,
+        OptionServiceInterface $optionService
     ) {
         $this->questionService = $questionService;
         $this->lessonService = $lessonService;
+        $this->optionService = $optionService;
     }
 
     /**
@@ -199,12 +203,20 @@ class QuestionController extends Controller
 
             // Lấy danh sách câu hỏi của bài học
             $questions = $this->questionService->getQuestionsByLessonId($lessonId);
+            
+            // Thêm options cho mỗi câu hỏi
+            $questionsWithOptions = $questions->map(function ($question) {
+                $questionArray = $question->toArray();
+                $options = $this->optionService->getOptionsByQuestionId($question->questionId);
+                $questionArray['options'] = $options;
+                return $questionArray;
+            });
 
             return response()->json([
                 'success' => true,
                 'data' => [
                     'lesson' => $lesson,
-                    'questions' => $questions
+                    'questions' => $questionsWithOptions
                 ]
             ]);
         } catch (DataNotFoundException $e) {
