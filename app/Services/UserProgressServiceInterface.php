@@ -44,6 +44,26 @@ interface UserProgressServiceInterface
     public function completeLesson(string $userId, int $lessonId, array $userAnswers): array;
 
     /**
+     * Xử lý việc nộp từng câu trả lời một và trả về phản hồi ngay lập tức
+     *
+     * @param string $userId
+     * @param int $lessonId
+     * @param int $questionId
+     * @param int $selectedOptionId
+     * @return array Trả về kết quả bao gồm thông tin câu trả lời và giải thích nếu sai
+     */
+    public function submitSingleAnswer(string $userId, int $lessonId, int $questionId, int $selectedOptionId): array;
+
+    /**
+     * Hoàn thành bài học sau khi đã trả lời các câu hỏi một cách riêng lẻ
+     *
+     * @param string $userId
+     * @param int $lessonId
+     * @return array Trả về kết quả tổng hợp của bài học
+     */
+    public function finalizeLessonProgress(string $userId, int $lessonId): array;
+
+    /**
      * Lấy thống kê học tập của người dùng
      *
      * @param string $userId

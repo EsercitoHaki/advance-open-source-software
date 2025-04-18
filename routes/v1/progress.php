@@ -17,6 +17,12 @@ Route::middleware(['jwt.auth'])->group(function () {
         // Hoàn thành bài học và gửi đáp án
         Route::post('/lesson/{lessonId}/complete', [UserProgressController::class, 'completeLesson']);
 
+        // Nộp một câu trả lời và nhận phản hồi ngay lập tức
+        Route::post('/lesson/{lessonId}/question/{questionId}/submit', [UserProgressController::class, 'submitAnswer']);
+
+        // Hoàn thành bài học sau khi đã nộp tất cả câu trả lời
+        Route::post('/lesson/{lessonId}/finalize', [UserProgressController::class, 'finalizeLessonProgress']);
+
         // Lấy thống kê học tập
         Route::get('/stats', [UserProgressController::class, 'getLearningStats']);
     });
