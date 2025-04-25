@@ -85,4 +85,9 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->belongsTo(Role::class, 'role_id');
     }
+    
+    public function checkins()
+    {
+        return $this->hasMany(CheckIn::class, 'user_id');
+    }
 }

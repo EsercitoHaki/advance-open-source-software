@@ -13,7 +13,7 @@ class CheckIn extends Model
 
     protected $fillable = [
         'user_id',
-        'check_in_date',
+        'checkin_date',
         'coins_earned',
     ];
 
@@ -24,5 +24,3 @@ class CheckIn extends Model
         return $this->belongsTo(User::class);
     }
 }
-
-?>

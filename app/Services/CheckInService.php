@@ -2,9 +2,14 @@
 
 namespace App\Services;
 
-use App\Repositories\CheckInRepository;
+use App\DTOs\CheckInDTO;
 use App\Exceptions\AppException;
+use App\Models\User;
+use App\Repositories\CheckInRepository;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+
 
 class CheckInService
 {
@@ -17,37 +22,49 @@ class CheckInService
 
     public function checkIn($user): array
     {
-        if ($this->checkInRepository->hasCheckedInToday($user->id)) {
-            throw new AppException('Bạn đã điểm danh hôm nay rồi!');
+        if (!$user) {
+            throw new AppException('Người dùng không hợp lệ hoặc không tồn tại!');
+            return false;
+        }
+
+        $role = DB::table('roles')->where('role_id', $user->role_id)->value('role_name');
+        if ($role !== 'student') {
+            throw new AppException('Chỉ tài khoản student mới có thể điểm danh!');
         }
 
         return DB::transaction(function () use ($user) {
+            $coins = 10;
+        
             // Ghi nhận điểm danh
-            $this->checkInRepository->createCheckIn($user->id, 10);
-
-            // Cộng xu
-            $user->increment('coins', 10);
-
-            // Kiểm tra điểm danh liên tiếp
-            $lastCheckIn = $this->checkInRepository->getLastCheckInBeforeToday($user->id);
-            $yesterday = now()->subDay()->toDateString();
-
-            if ($lastCheckIn && $lastCheckIn->check_in_date == $yesterday) {
-                $user->increment('current_streak');
-            } else {
-                $user->update(['current_streak' => 1]);
-            }
-
-            // Cập nhật chuỗi dài nhất nếu cần
-            if ($user->current_streak > $user->longest_streak) {
-                $user->update(['longest_streak' => $user->current_streak]);
-            }
-
+            $checkIn = $this->checkInRepository->create(
+                new CheckInDTO($user->user_id, Carbon::now('Asia/Ho_Chi_Minh')->toDateString(), $coins)
+            );
+        
+            // Cộng xu vào user
+            $user->increment('coins', $coins);
+            $user->refresh(); // lấy lại dữ liệu mới sau khi update
+        
             return [
-                'message' => 'Điểm danh thành công!',
-                'coins'   => $user->coins,
-                'streak'  => $user->current_streak,
+                'checkin_date' => $checkIn->checkin_date,
+                'coins_earned' => $checkIn->coins_earned,
+                'total_coins' => $user->coins, 
             ];
         });
+    }
+
+    public function getCheckInHistory(User $user)
+    {
+        if (!$user) {
+            throw new AppException('Người dùng không hợp lệ hoặc không tồn tại!');
+            return false;
+        }
+
+        $checkInHistory = $user->checkins()->orderBy('checkin_date', 'desc')->get(['checkin_date', 'coins_earned']);
+
+        if ($checkInHistory->isEmpty()) {
+            throw new AppException('Không có lịch sử điểm danh.');
+        }
+    
+        return $checkInHistory;    
     }
 }

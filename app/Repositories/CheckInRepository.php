@@ -1,27 +1,27 @@
 <?php 
 
 namespace App\Repositories;
-
+use Illuminate\Support\Facades\DB;
 use App\Models\CheckIn;
 use Carbon\Carbon;
+use App\DTOs\CheckInDTO; 
+use App\Exceptions\AppException;
 
 class CheckInRepository
 {
-    public function hasCheckedInToday($userId)
+    public function create(CheckInDTO|array $data): CheckIn
     {
-        return CheckIn::where('user_id', $userId)
-                      ->whereDate('check_in_date', Carbon::today())
-                      ->exists();
-    }
+        if ($data instanceof CheckInDTO) {
+            $data = $data->toArray();
+        }
 
-    public function createCheckIn($userId, $coins = 10)
-    {
-        return CheckIn::create([
-            'user_id' => $userId,
-            'check_in_date' => Carbon::today(),
-            'coins_earned' => $coins
-        ]);
+        try {
+            return CheckIn::create($data);
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() === '23000') {
+                throw new AppException('Bạn đã điểm danh hôm nay rồi!');
+            }
+            throw $e;
+        }
     }
 }
-
-?>
