@@ -13,3 +13,7 @@ Route::prefix($version)->group(function () use ($version) {
         require $file;
     }
 });
+
+Route::middleware(['auth:api'])->group(function () {
+    Route::post('/check-in', [CheckInController::class, 'checkIn']);
+});
