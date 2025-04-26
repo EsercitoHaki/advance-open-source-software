@@ -23,6 +23,11 @@ use App\Services\OptionServiceInterface;
 use App\Services\OptionService;
 use App\Services\UserProgressServiceInterface;
 use App\Services\UserProgressService;
+use App\Repositories\FriendRepositoryInterface;
+use App\Repositories\FriendRepository;
+use App\Repositories\FriendRequestRepositoryInterface;
+use App\Repositories\FriendRequestRepository;
+use App\Services\FriendService;
 
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -57,6 +62,16 @@ class RepositoryServiceProvider extends ServiceProvider
             \App\Repositories\OptionRepository::class
         );
 
+        $this->app->bind(
+            \App\Repositories\FriendRepositoryInterface::class,
+            \App\Repositories\FriendRepository::class
+        );
+
+        $this->app->bind(
+            \App\Repositories\FriendRequestRepositoryInterface::class,
+            \App\Repositories\FriendRequestRepository::class
+        );
+
         // Đăng ký service bindings
         $this->app->bind(
             \App\Services\AuthServiceInterface::class,
@@ -82,6 +97,9 @@ class RepositoryServiceProvider extends ServiceProvider
             \App\Services\UserProgressServiceInterface::class,
             \App\Services\UserProgressService::class
         );
+
+        // Register FriendService
+        $this->app->singleton(FriendService::class);
     }
 
     /**
