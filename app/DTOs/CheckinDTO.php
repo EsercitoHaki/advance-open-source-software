@@ -13,9 +13,6 @@ class CheckInDTO
         public ?int $coinsEarned = null
     ) {}
 
-    /**
-     * Tạo DTO từ Request (có thể là từ service hay controller gọi).
-     */
     public static function fromRequest(Request $request): self
     {
         return new self(
@@ -25,9 +22,6 @@ class CheckInDTO
         );
     }
 
-    /**
-     * Tạo DTO từ Model CheckIn.
-     */
     public static function fromModel(CheckIn $checkIn): self
     {
         return new self(
@@ -37,9 +31,6 @@ class CheckInDTO
         );
     }
 
-    /**
-     * Convert DTO to array.
-     */
     public function toArray(): array
     {
         return [

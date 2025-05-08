@@ -17,9 +17,6 @@ class UserPurchaseController extends Controller
         $this->userPurchaseService = $userPurchaseService;
     }
 
-    /**
-     * Mua item (tim hoặc linh vật)
-     */
     public function purchaseItem(Request $request)
     {
         try {
