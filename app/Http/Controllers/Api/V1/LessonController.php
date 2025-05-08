@@ -7,11 +7,21 @@ use App\Services\LessonServiceInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Exceptions\DataNotFoundException;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 class LessonController extends Controller
 {
+    /**
+     * @var LessonServiceInterface
+     */
     protected $lessonService;
 
+    /**
+     * Khởi tạo controller với service cần thiết
+     * 
+     * @param LessonServiceInterface $lessonService
+     */
     public function __construct(LessonServiceInterface $lessonService)
     {
         $this->lessonService = $lessonService;
@@ -24,16 +34,23 @@ class LessonController extends Controller
      */
     public function index(): JsonResponse
     {
-        $lessons = $this->lessonService->getAllLessons();
-    
-        return response()->json([
-            'success' => true,
-            'data' => $lessons // không cần ->map(...)->toArray()
-        ]);
+        try {
+            $lessons = $this->lessonService->getAllLessons();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Lấy danh sách bài học thành công',
+                'data' => $lessons
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Lỗi khi lấy danh sách bài học: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Đã xảy ra lỗi khi lấy danh sách bài học',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
-    
-    
-    
 
     /**
      * Lấy bài học theo ID.
@@ -48,13 +65,21 @@ class LessonController extends Controller
 
             return response()->json([
                 'success' => true,
-                'data' => $lesson->toArray()
+                'message' => 'Lấy thông tin bài học thành công',
+                'data' => $lesson
             ]);
         } catch (DataNotFoundException $e) {
             return response()->json([
-                'error' => true,
-                'message' => $e->getMessage(),
+                'success' => false,
+                'message' => $e->getMessage()
             ], 404);
+        } catch (\Exception $e) {
+            Log::error('Lỗi khi lấy thông tin bài học: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Đã xảy ra lỗi khi lấy thông tin bài học',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 
@@ -66,20 +91,79 @@ class LessonController extends Controller
      */
     public function getByCategory(Request $request): JsonResponse
     {
-        $category = $request->query('category');
+        $validator = Validator::make($request->all(), [
+            'category' => 'required|string'
+        ], [
+            'category.required' => 'Thiếu tham số category'
+        ]);
 
-        if (!$category) {
+        if ($validator->fails()) {
             return response()->json([
-                'error' => true,
-                'message' => 'Thiếu tham số category'
+                'success' => false,
+                'message' => $validator->errors()->first()
             ], 400);
         }
 
-        $lessons = $this->lessonService->getLessonsByCategory($category);
+        try {
+            $category = $request->query('category');
+            $lessons = $this->lessonService->getLessonsByCategory($category);
 
-        return response()->json([
-            'success' => true,
-            'data' => $lessons->toArray()
-        ]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Lấy danh sách bài học theo danh mục thành công',
+                'data' => $lessons
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Lỗi khi lấy danh sách bài học theo danh mục: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Đã xảy ra lỗi khi lấy danh sách bài học theo danh mục',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
-} 
+
+    /**
+     * Tạo bài học mới
+     * 
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function create(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|string|max:255',
+            'category' => 'required|string|in:Grammar,Vocabulary,Listening,Reading'
+        ], [
+            'title.required' => 'Thiếu tiêu đề bài học',
+            'title.max' => 'Tiêu đề bài học không được vượt quá 255 ký tự',
+            'category.required' => 'Thiếu danh mục bài học',
+            'category.in' => 'Danh mục bài học không hợp lệ'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first()
+            ], 400);
+        }
+
+        try {
+            $lessonData = $request->only(['title', 'category']);
+            $lesson = $this->lessonService->createLesson($lessonData);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Tạo bài học mới thành công',
+                'data' => $lesson
+            ], 201);
+        } catch (\Exception $e) {
+            Log::error('Lỗi khi tạo bài học mới: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Đã xảy ra lỗi khi tạo bài học mới',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+}

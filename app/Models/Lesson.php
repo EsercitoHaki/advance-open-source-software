@@ -24,7 +24,7 @@ class Lesson extends Model
     /**
      * Chỉ định các cột có thể gán giá trị hàng loạt
      *
-     * @var array
+     * @var array<int, string>
      */
     protected $fillable = [
         'title',
@@ -42,17 +42,47 @@ class Lesson extends Model
     /**
      * Các giá trị category hợp lệ
      *
-     * @var array
+     * @var array<int, string>
      */
     public static $categories = ['Grammar', 'Vocabulary', 'Listening', 'Reading'];
 
     /**
-     * Quan hệ với model Question
+     * Định dạng các kiểu dữ liệu cho các cột
+     * 
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'created_date' => 'datetime',
+    ];
+
+    /**
+     * Quan hệ với model Question - một bài học có nhiều câu hỏi
      *
      * @return HasMany
      */
     public function questions(): HasMany
     {
         return $this->hasMany(Question::class, 'lesson_id', 'lesson_id');
+    }
+
+    /**
+     * Kiểm tra xem danh mục có hợp lệ không
+     *
+     * @param string $category
+     * @return bool
+     */
+    public static function isValidCategory(string $category): bool
+    {
+        return in_array($category, self::$categories);
+    }
+
+    /**
+     * Lấy danh sách các danh mục bài học
+     * 
+     * @return array<int, string>
+     */
+    public static function getCategories(): array
+    {
+        return self::$categories;
     }
 }

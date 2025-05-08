@@ -18,12 +18,12 @@ interface LessonServiceInterface
      * Lấy bài học theo ID.
      *
      * @param string $lessonId
-     * @return LessonDTO|null
+     * @return LessonDTO
      */
-    public function getLessonById(string $lessonId): ?LessonDTO;
+    public function getLessonById(string $lessonId): LessonDTO;
 
     /**
-     * Lấy danh sách bài học theo category.
+     * Lấy danh sách bài học theo danh mục.
      *
      * @param string $category
      * @return Collection
@@ -37,4 +37,12 @@ interface LessonServiceInterface
      * @return LessonDTO
      */
     public function createLesson(array $lessonData): LessonDTO;
+
+    /**
+     * Kiểm tra tồn tại của bài học
+     *
+     * @param string $lessonId
+     * @return bool
+     */
+    public function checkLessonExists(string $lessonId): bool;
 }

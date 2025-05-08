@@ -7,6 +7,14 @@ use JsonSerializable;
 
 class LessonDTO implements JsonSerializable
 {
+    /**
+     * Khởi tạo đối tượng DTO
+     * 
+     * @param string|null $lessonId ID của bài học
+     * @param string|null $title Tiêu đề bài học
+     * @param string|null $category Danh mục của bài học
+     * @param string|null $createdDate Ngày tạo bài học
+     */
     public function __construct(
         public ?string $lessonId = null,
         public ?string $title = null,
@@ -17,6 +25,9 @@ class LessonDTO implements JsonSerializable
 
     /**
      * Tạo một đối tượng DTO từ model Lesson.
+     * 
+     * @param Lesson $lesson Model bài học
+     * @return self
      */
     public static function fromModel(Lesson $lesson): self
     {
@@ -30,6 +41,8 @@ class LessonDTO implements JsonSerializable
 
     /**
      * Chuyển đối tượng DTO thành mảng.
+     * 
+     * @return array
      */
     public function toArray(): array
     {
@@ -42,10 +55,38 @@ class LessonDTO implements JsonSerializable
     }
 
     /**
+     * Chuyển đổi đối tượng thành chuỗi JSON.
+     * 
+     * @return string
+     */
+    public function toJson(): string
+    {
+        return json_encode($this->toArray());
+    }
+
+    /**
      * Giúp Laravel tự json_encode đúng cách mà không lỗi encoding.
+     * 
+     * @return array
      */
     public function jsonSerialize(): array
     {
         return $this->toArray();
+    }
+
+    /**
+     * Chuyển đổi mảng dữ liệu thành đối tượng DTO.
+     * 
+     * @param array $data Mảng dữ liệu
+     * @return self
+     */
+    public static function fromArray(array $data): self
+    {
+        return new self(
+            lessonId: $data['lesson_id'] ?? null,
+            title: $data['title'] ?? null,
+            category: $data['category'] ?? null,
+            createdDate: $data['created_date'] ?? null
+        );
     }
 }

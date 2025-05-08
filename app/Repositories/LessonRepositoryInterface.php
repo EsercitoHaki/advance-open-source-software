@@ -23,7 +23,7 @@ interface LessonRepositoryInterface
     public function getLessonById(string $lessonId): ?Lesson;
 
     /**
-     * Lấy danh sách bài học theo category.
+     * Lấy danh sách bài học theo danh mục.
      *
      * @param string $category
      * @return Collection
@@ -37,4 +37,12 @@ interface LessonRepositoryInterface
      * @return Lesson
      */
     public function createLesson(array $lessonData): Lesson;
+
+    /**
+     * Lấy số lượng bài học theo danh mục.
+     *
+     * @param string $category
+     * @return int
+     */
+    public function countLessonsByCategory(string $category): int;
 }
