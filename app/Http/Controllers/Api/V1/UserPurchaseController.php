@@ -18,10 +18,9 @@ class UserPurchaseController extends Controller
         $this->userPurchaseService = $userPurchaseService;
     }
 
-    public function purchaseItem(PurchaseRequest $request)
+    public function purchaseItem($itemId)
     {
-        $user = Auth::user(); 
-        $itemId = $request->input('item_id');
+        $user = Auth::user();
 
         if (!$user) {
             throw new AppException('Người dùng không hợp lệ hoặc không tồn tại!');
@@ -51,7 +50,7 @@ class UserPurchaseController extends Controller
     public function getPurchaseHistory()
     {
         try {
-            $user = Auth::user(); 
+            $user = Auth::user();
             $history = $this->userPurchaseService->getPurchaseHistory($user);
 
             return response()->json([

@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Services\StoreItemService;
 use App\Exceptions\AppException;
 use Illuminate\Http\Request;
+use App\Exceptions\ExpiredTokenException;
 
 class StoreItemController extends Controller
 {
@@ -20,8 +21,6 @@ class StoreItemController extends Controller
     public function getStoreItems()
     {
         try {
-            $user = Auth::user(); 
-
             $items = $this->storeItemService->getAllItems();
 
             return response()->json([
@@ -29,11 +28,16 @@ class StoreItemController extends Controller
                 'data' => $items
             ], 200);
 
-        } catch (AppException $e) {
+        } catch (ExpiredTokenException $e) {
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage()
-            ], 400);
+            ], 401);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Đã xảy ra lỗi: ' . $e->getMessage()
+            ], 500);
         }
     }
 }
