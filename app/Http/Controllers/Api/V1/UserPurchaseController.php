@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\Services\UserPurchaseService;
 use App\Exceptions\AppException;
+use App\Http\Requests\PurchaseRequest;
 use Illuminate\Http\Request;
 
 class UserPurchaseController extends Controller
@@ -17,16 +18,19 @@ class UserPurchaseController extends Controller
         $this->userPurchaseService = $userPurchaseService;
     }
 
-    public function purchaseItem(Request $request)
+    public function purchaseItem(PurchaseRequest $request)
     {
+        $user = Auth::user(); 
+        $itemId = $request->input('item_id');
+
+        if (!$user) {
+            throw new AppException('Người dùng không hợp lệ hoặc không tồn tại!');
+        }
+        if (!$itemId) {
+            throw new AppException('Thiếu item_id.');
+        }
+
         try {
-            $user = Auth::user(); 
-            $itemId = $request->input('item_id');
-
-            if (!$itemId) {
-                throw new AppException('Thiếu item_id.');
-            }
-
             $result = $this->userPurchaseService->purchaseItem($user, (int)$itemId);
 
             return response()->json([

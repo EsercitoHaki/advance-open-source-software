@@ -12,7 +12,13 @@ class CheckInRequest extends FormRequest
 
     public function rules(): array
     {
-        return []; // Không cần validate gì vì chỉ cần user gửi request
+        return [
+        ]; 
+    }
+
+    public function messages(): array
+    {
+        return [];
     }
 }
 ?>

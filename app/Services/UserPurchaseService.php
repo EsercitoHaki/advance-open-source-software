@@ -36,13 +36,11 @@ class UserPurchaseService
         }
 
         return DB::transaction(function () use ($user, $itemId) {
-            // Lấy item
             $item = $this->storeItemRepository->findItemById($itemId);
             if (!$item) {
                 throw new AppException('Item không tồn tại.');
             }
 
-            // Kiểm tra đủ xu chưa
             if ($user->coins < $item->item_price) {
                 throw new AppException('Bạn không đủ xu để mua item này.');
             }
@@ -66,7 +64,6 @@ class UserPurchaseService
             $user->coins -= $item->item_price;
             $user->save();
 
-            // Ghi nhận mua qua DTO
             $dto = new UserPurchaseDTO(
                 user_id: $user->user_id,
                 item_id: $item->item_id,

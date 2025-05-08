@@ -15,14 +15,27 @@ class StoreItemService
 
     public function getAllItems()
     {
-        return $this->storeItemRepository->getAllItems();
+        $items = $this->storeItemRepository->getItemsWithPurchaseStatus($userId);
+
+        if (is_null($items)) {
+            throw new AppException('Không thể lấy danh sách item từ cửa hàng.');
+        }
+
+        if ($items->isEmpty()) {
+            throw new AppException('Hiện tại không có item nào trong cửa hàng.');
+        }
+
+        return $items;
     }
-    
 
     public function getStoreItemsWithPurchaseStatus(string $userId)
     {
-        $items = $this->storeItemRepository->getItemsWithPurchaseStatus($userId);
+        if (!$userId) {
+            throw new AppException('Thiếu user_id.');
+        }
 
-        return $items;
+        $itemsStatus = $this->storeItemRepository->getItemsWithPurchaseStatus($userId);
+
+        return $itemsStatus;
     }
 }
