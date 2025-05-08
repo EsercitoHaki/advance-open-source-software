@@ -31,7 +31,7 @@ class StoreItemService
     public function getStoreItemsWithPurchaseStatus(string $userId)
     {
         if (!$userId) {
-            throw new AppException('Thiếu user_id.');
+            throw new AppException('Người dùng không hợp lệ.');
         }
 
         $itemsStatus = $this->storeItemRepository->getItemsWithPurchaseStatus($userId);
