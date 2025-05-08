@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Exceptions\DataNotFoundException;
+use App\Exceptions\InvalidParamException;
 use App\Models\UserProgress;
 use Illuminate\Support\Collection;
 
@@ -13,6 +15,7 @@ interface UserProgressServiceInterface
      * @param string $userId
      * @param int $lessonId
      * @return UserProgress|null
+     * @throws DataNotFoundException
      */
     public function getUserProgress(string $userId, int $lessonId): ?UserProgress;
 
@@ -40,6 +43,7 @@ interface UserProgressServiceInterface
      * @param int $lessonId
      * @param array $userAnswers [questionId => optionId]
      * @return array Trả về kết quả bao gồm điểm số và thông tin câu trả lời
+     * @throws InvalidParamException
      */
     public function completeLesson(string $userId, int $lessonId, array $userAnswers): array;
 
@@ -51,6 +55,8 @@ interface UserProgressServiceInterface
      * @param int $questionId
      * @param int $selectedOptionId
      * @return array Trả về kết quả bao gồm thông tin câu trả lời và giải thích nếu sai
+     * @throws InvalidParamException
+     * @throws DataNotFoundException
      */
     public function submitSingleAnswer(string $userId, int $lessonId, int $questionId, int $selectedOptionId): array;
 
@@ -60,6 +66,7 @@ interface UserProgressServiceInterface
      * @param string $userId
      * @param int $lessonId
      * @return array Trả về kết quả tổng hợp của bài học
+     * @throws InvalidParamException
      */
     public function finalizeLessonProgress(string $userId, int $lessonId): array;
 
@@ -70,4 +77,22 @@ interface UserProgressServiceInterface
      * @return array
      */
     public function getUserLearningStats(string $userId): array;
+
+    /**
+     * Kiểm tra xem người dùng đã bắt đầu một bài học hay chưa
+     *
+     * @param string $userId
+     * @param int $lessonId
+     * @return bool
+     */
+    public function hasStartedLesson(string $userId, int $lessonId): bool;
+
+    /**
+     * Kiểm tra xem người dùng đã hoàn thành một bài học hay chưa
+     *
+     * @param string $userId
+     * @param int $lessonId
+     * @return bool
+     */
+    public function hasCompletedLesson(string $userId, int $lessonId): bool;
 }

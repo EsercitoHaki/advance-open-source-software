@@ -51,4 +51,20 @@ interface UserProgressRepositoryInterface
      * @return array
      */
     public function getUserLearningStats(string $userId): array;
+
+    /**
+     * Lấy danh sách các bài học người dùng đã hoàn thành
+     *
+     * @param string $userId
+     * @return Collection
+     */
+    public function getCompletedLessons(string $userId): Collection;
+
+    /**
+     * Lấy danh sách các bài học người dùng đang học dở
+     *
+     * @param string $userId
+     * @return Collection
+     */
+    public function getInProgressLessons(string $userId): Collection;
 }
