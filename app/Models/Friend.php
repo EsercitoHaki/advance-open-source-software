@@ -10,29 +10,22 @@ class Friend extends Model
 {
     use HasFactory;
 
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
+
     protected $table = 'friends';
 
     /**
-     * The primary key associated with the table.
      *
      * @var string
      */
     protected $primaryKey = 'friend_id';
 
     /**
-     * Indicates if the model should be timestamped.
      *
      * @var bool
      */
     public $timestamps = false;
 
     /**
-     * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
@@ -43,7 +36,6 @@ class Friend extends Model
     ];
 
     /**
-     * The attributes that should be cast.
      *
      * @var array<string, string>
      */
@@ -52,7 +44,6 @@ class Friend extends Model
     ];
 
     /**
-     * Get the first user in the friendship.
      *
      * @return BelongsTo
      */
@@ -62,7 +53,6 @@ class Friend extends Model
     }
 
     /**
-     * Get the second user in the friendship.
      *
      * @return BelongsTo
      */

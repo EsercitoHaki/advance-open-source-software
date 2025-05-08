@@ -19,7 +19,6 @@ class FriendController extends Controller
     protected $friendService;
 
     /**
-     * FriendController constructor.
      *
      * @param FriendService $friendService
      */
@@ -29,7 +28,6 @@ class FriendController extends Controller
     }
 
     /**
-     * Send a friend request to another user
      *
      * @param Request $request
      * @return JsonResponse
@@ -42,14 +40,14 @@ class FriendController extends Controller
         if ($request->receiver_id === $user->user_id) {
             return response()->json([
                 'success' => false,
-                'message' => 'You cannot send a friend request to yourself.'
+                'message' => 'Bạn không thể gửi lời mời kết bạn cho chính mình.'
             ], 422);
         }
 
         $validator = Validator::make($request->all(), [
             'receiver_id' => 'required|string|exists:users,user_id'
         ], [
-            'receiver_id.exists' => 'The specified user does not exist.'
+            'receiver_id.exists' => 'Người dùng không tồn tại.'
         ]);
 
         if ($validator->fails()) {
@@ -59,7 +57,6 @@ class FriendController extends Controller
             ], 422);
         }
 
-        // Check for existing pending friend request
         $existingRequest = FriendRequest::where('sender_id', $user->user_id)
             ->where('receiver_id', $request->receiver_id)
             ->where('status', 'pending')
@@ -68,7 +65,7 @@ class FriendController extends Controller
         if ($existingRequest) {
             return response()->json([
                 'success' => false,
-                'message' => 'You already have a pending friend request to this user.'
+                'message' => 'Bạn đã gửi lời mời kết bạn cho người này trước đó.'
             ], 422);
         }
 
@@ -78,7 +75,6 @@ class FriendController extends Controller
     }
 
     /**
-     * Accept a friend request
      *
      * @param string $requestId
      * @return JsonResponse
@@ -91,7 +87,6 @@ class FriendController extends Controller
     }
 
     /**
-     * Reject a friend request
      *
      * @param string $requestId
      * @return JsonResponse
@@ -104,7 +99,6 @@ class FriendController extends Controller
     }
 
     /**
-     * Get pending friend requests
      *
      * @return JsonResponse
      */
@@ -112,14 +106,10 @@ class FriendController extends Controller
     {
         $result = $this->friendService->getPendingFriendRequests();
 
-        return response()->json([
-            'success' => true,
-            'data' => $result
-        ]);
+        return response()->json($result, $result['success'] ? 200 : 400);
     }
 
     /**
-     * Get sent friend requests
      *
      * @return JsonResponse
      */
@@ -127,14 +117,10 @@ class FriendController extends Controller
     {
         $result = $this->friendService->getSentFriendRequests();
 
-        return response()->json([
-            'success' => true,
-            'data' => $result
-        ]);
+        return response()->json($result, $result['success'] ? 200 : 400);
     }
 
     /**
-     * Get user's friends list
      *
      * @return JsonResponse
      */
@@ -142,14 +128,10 @@ class FriendController extends Controller
     {
         $result = $this->friendService->getFriendsList();
 
-        return response()->json([
-            'success' => true,
-            'data' => $result
-        ]);
+        return response()->json($result, $result['success'] ? 200 : 400);
     }
 
     /**
-     * Remove a friend
      *
      * @param string $friendId
      * @return JsonResponse

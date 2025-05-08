@@ -38,17 +38,17 @@ class FriendRequestRepository extends BaseRepository implements FriendRequestRep
     {
         // Check if sender and receiver are the same user
         if ($senderId === $receiverId) {
-            throw new InvalidParamException('Cannot send friend request to yourself');
+            throw new InvalidParamException('Không thể gửi lời mời kết bạn cho chính mình');
         }
 
         // Check if they are already friends
         if ($this->friendRepository->checkFriendshipExists($senderId, $receiverId)) {
-            throw new InvalidParamException('Users are already friends');
+            throw new InvalidParamException('Bạn đã là bạn bè với người này');
         }
 
         // Check if a friend request already exists
         if ($this->checkFriendRequestExists($senderId, $receiverId)) {
-            throw new InvalidParamException('Friend request already sent');
+            throw new InvalidParamException('Lời mời kết bạn đã được gửi trước đó');
         }
 
         // Check if there's a pending request in the opposite direction
@@ -58,7 +58,7 @@ class FriendRequestRepository extends BaseRepository implements FriendRequestRep
             ->first();
 
         if ($existingRequest) {
-            throw new InvalidParamException('You already have a pending request from this user. Accept it instead.');
+            throw new InvalidParamException('Bạn đã nhận lời mời kết bạn từ người này');
         }
 
         // Create the friend request
@@ -109,11 +109,11 @@ class FriendRequestRepository extends BaseRepository implements FriendRequestRep
         $request = $this->findFriendRequestById($requestId);
 
         if (!$request) {
-            throw new InvalidParamException('Friend request not found');
+            throw new InvalidParamException('Không tìm thấy lời mời kết bạn');
         }
 
         if ($request->status !== 'pending') {
-            throw new InvalidParamException('Friend request already processed');
+            throw new InvalidParamException('Lời mời kết bạn đã được xử lý trước đó');
         }
 
         DB::beginTransaction();
@@ -145,11 +145,11 @@ class FriendRequestRepository extends BaseRepository implements FriendRequestRep
         $request = $this->findFriendRequestById($requestId);
 
         if (!$request) {
-            throw new InvalidParamException('Friend request not found');
+            throw new InvalidParamException('Không tìm thấy lời mời kết bạn');
         }
 
         if ($request->status !== 'pending') {
-            throw new InvalidParamException('Friend request already processed');
+            throw new InvalidParamException('Lời mời kết bạn đã được xử lý trước đó');
         }
 
         // Delete the friend request instead of updating its status
@@ -180,5 +180,35 @@ class FriendRequestRepository extends BaseRepository implements FriendRequestRep
             ->where('receiver_id', $receiverId)
             ->where('status', 'pending')
             ->exists();
+    }
+
+    /**
+     * Find a pending friend request between two users
+     *
+     * @param string $senderId
+     * @param string $receiverId
+     * @return FriendRequest|null
+     */
+    public function findPendingRequest(string $senderId, string $receiverId): ?FriendRequest
+    {
+        return FriendRequest::where('sender_id', $senderId)
+            ->where('receiver_id', $receiverId)
+            ->where('status', 'pending')
+            ->first();
+    }
+
+    /**
+     * Find a reverse pending friend request (from receiver to sender)
+     *
+     * @param string $senderId
+     * @param string $receiverId
+     * @return FriendRequest|null
+     */
+    public function findReversePendingRequest(string $senderId, string $receiverId): ?FriendRequest
+    {
+        return FriendRequest::where('sender_id', $receiverId)
+            ->where('receiver_id', $senderId)
+            ->where('status', 'pending')
+            ->first();
     }
 }

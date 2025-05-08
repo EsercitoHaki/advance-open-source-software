@@ -89,7 +89,6 @@ class FriendRepository extends BaseRepository implements FriendRepositoryInterfa
      */
     public function checkFriendshipExists(string $user1Id, string $user2Id): bool
     {
-        // Always search with lower ID as user1_id to simplify lookup
         $minId = min($user1Id, $user2Id);
         $maxId = max($user1Id, $user2Id);
 
@@ -99,7 +98,6 @@ class FriendRepository extends BaseRepository implements FriendRepositoryInterfa
     }
 
     /**
-     * Remove a friendship between two users and delete any related friend requests
      *
      * @param string $user1Id
      * @param string $user2Id
@@ -111,7 +109,6 @@ class FriendRepository extends BaseRepository implements FriendRepositoryInterfa
 
         DB::beginTransaction();
         try {
-            // Always search with lower ID as user1_id
             $minId = min($user1Id, $user2Id);
             $maxId = max($user1Id, $user2Id);
 
@@ -141,5 +138,26 @@ class FriendRepository extends BaseRepository implements FriendRepositoryInterfa
         }
 
         return $result;
+    }
+
+    /**
+     *
+     * @param string $userId
+     * @return User|null
+     */
+    public function findUserById(string $userId): ?User
+    {
+        return User::where('user_id', $userId)->first();
+    }
+
+    /**
+     *
+     * @param string $user1Id
+     * @param string $user2Id
+     * @return bool
+     */
+    public function areFriends(string $user1Id, string $user2Id): bool
+    {
+        return $this->checkFriendshipExists($user1Id, $user2Id);
     }
 }

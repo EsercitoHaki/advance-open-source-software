@@ -16,7 +16,6 @@ interface FriendRequestRepositoryInterface
     public function sendFriendRequest(string $senderId, string $receiverId): FriendRequest;
 
     /**
-     * Get all friend requests received by a user
      *
      * @param string $userId
      * @return \Illuminate\Database\Eloquent\Collection
@@ -24,7 +23,6 @@ interface FriendRequestRepositoryInterface
     public function getReceivedFriendRequests(string $userId);
 
     /**
-     * Get all friend requests sent by a user
      *
      * @param string $userId
      * @return \Illuminate\Database\Eloquent\Collection
@@ -32,7 +30,6 @@ interface FriendRequestRepositoryInterface
     public function getSentFriendRequests(string $userId);
 
     /**
-     * Accept a friend request
      *
      * @param string $requestId
      * @return bool
@@ -40,7 +37,6 @@ interface FriendRequestRepositoryInterface
     public function acceptFriendRequest(string $requestId): bool;
 
     /**
-     * Reject a friend request
      *
      * @param string $requestId
      * @return bool
@@ -48,7 +44,6 @@ interface FriendRequestRepositoryInterface
     public function rejectFriendRequest(string $requestId): bool;
 
     /**
-     * Find a friend request by ID
      *
      * @param string $requestId
      * @return FriendRequest|null
@@ -56,11 +51,26 @@ interface FriendRequestRepositoryInterface
     public function findFriendRequestById(string $requestId): ?FriendRequest;
 
     /**
-     * Check if a friend request already exists between users
      *
      * @param string $senderId
      * @param string $receiverId
      * @return bool
      */
     public function checkFriendRequestExists(string $senderId, string $receiverId): bool;
+
+    /**
+     *
+     * @param string $senderId
+     * @param string $receiverId
+     * @return FriendRequest|null
+     */
+    public function findPendingRequest(string $senderId, string $receiverId): ?FriendRequest;
+
+    /**
+     *
+     * @param string $senderId
+     * @param string $receiverId
+     * @return FriendRequest|null
+     */
+    public function findReversePendingRequest(string $senderId, string $receiverId): ?FriendRequest;
 }

@@ -8,7 +8,6 @@ use App\Models\User;
 interface FriendRepositoryInterface
 {
     /**
-     * Create a friendship between two users
      *
      * @param string $user1Id
      * @param string $user2Id
@@ -17,7 +16,6 @@ interface FriendRepositoryInterface
     public function createFriendship(string $user1Id, string $user2Id): Friend;
 
     /**
-     * Get all friends of a user
      *
      * @param string $userId
      * @return \Illuminate\Database\Eloquent\Collection
@@ -25,7 +23,6 @@ interface FriendRepositoryInterface
     public function getUserFriends(string $userId);
 
     /**
-     * Check if two users are friends
      *
      * @param string $user1Id
      * @param string $user2Id
@@ -34,11 +31,25 @@ interface FriendRepositoryInterface
     public function checkFriendshipExists(string $user1Id, string $user2Id): bool;
 
     /**
-     * Remove a friendship between two users
      *
      * @param string $user1Id
      * @param string $user2Id
      * @return bool
      */
     public function removeFriendship(string $user1Id, string $user2Id): bool;
+
+    /**
+     *
+     * @param string $userId
+     * @return User|null
+     */
+    public function findUserById(string $userId): ?User;
+
+    /**
+     *
+     * @param string $user1Id
+     * @param string $user2Id
+     * @return bool
+     */
+    public function areFriends(string $user1Id, string $user2Id): bool;
 }

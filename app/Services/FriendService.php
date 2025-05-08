@@ -11,22 +11,13 @@ use Illuminate\Support\Facades\Auth;
 
 class FriendService
 {
-    /**
-     * @var FriendRepositoryInterface
-     */
+
     protected $friendRepository;
 
-    /**
-     * @var FriendRequestRepositoryInterface
-     */
+
     protected $friendRequestRepository;
 
-    /**
-     * FriendService constructor.
-     *
-     * @param FriendRepositoryInterface $friendRepository
-     * @param FriendRequestRepositoryInterface $friendRequestRepository
-     */
+
     public function __construct(
         FriendRepositoryInterface $friendRepository,
         FriendRequestRepositoryInterface $friendRequestRepository
@@ -35,15 +26,45 @@ class FriendService
         $this->friendRequestRepository = $friendRequestRepository;
     }
 
-    /**
-     * Send a friend request
-     *
-     * @param string $receiverId
-     * @return array
-     */
+
     public function sendFriendRequest(string $receiverId): array
     {
         $user = Auth::user();
+
+        // Validate before sending request
+        // Check if receiver exists
+        $receiver = $this->friendRepository->findUserById($receiverId);
+        if (!$receiver) {
+            return [
+                'success' => false,
+                'message' => 'Người dùng không tồn tại'
+            ];
+        }
+
+        // Check if sending request to self
+        if ($user->user_id === $receiverId) {
+            return [
+                'success' => false,
+                'message' => 'Bạn không thể gửi lời mời kết bạn cho chính mình'
+            ];
+        }
+
+        // Check if already friends
+        if ($this->friendRepository->areFriends($user->user_id, $receiverId)) {
+            return [
+                'success' => false,
+                'message' => 'Các bạn đã là bạn bè của nhau'
+            ];
+        }
+
+        // Check if request already exists
+        $existingRequest = $this->friendRequestRepository->findPendingRequest($user->user_id, $receiverId);
+        if ($existingRequest) {
+            return [
+                'success' => false,
+                'message' => 'Lời mời kết bạn đã được gửi trước đó'
+            ];
+        }
 
         try {
             $request = $this->friendRequestRepository->sendFriendRequest($user->user_id, $receiverId);
@@ -56,21 +77,15 @@ class FriendService
                     'status' => $request->status
                 ]
             ];
-        } catch (InvalidParamException $e) {
+        } catch (\Exception $e) {
             return [
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => 'Có lỗi xảy ra khi gửi lời mời kết bạn'
             ];
         }
     }
 
-    /**
-     * Accept a friend request
-     *
-     * @param string $requestId
-     * @return array
-     */
-    public function acceptFriendRequest(string $requestId): array
+    protected function validateFriendRequest(string $requestId): ?array
     {
         $user = Auth::user();
         $request = $this->friendRequestRepository->findFriendRequestById($requestId);
@@ -82,12 +97,21 @@ class FriendService
             ];
         }
 
-        // Check if current user is the receiver of the request
         if ($request->receiver_id !== $user->user_id) {
             return [
                 'success' => false,
-                'message' => 'Bạn không có quyền chấp nhận lời mời này'
+                'message' => 'Bạn không có quyền xử lý lời mời này'
             ];
+        }
+
+        return null; 
+    }
+
+    public function acceptFriendRequest(string $requestId): array
+    {
+        $validationResult = $this->validateFriendRequest($requestId);
+        if ($validationResult !== null) {
+            return $validationResult;
         }
 
         try {
@@ -100,35 +124,22 @@ class FriendService
         } catch (\Exception $e) {
             return [
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => 'Có lỗi xảy ra khi chấp nhận lời mời kết bạn'
             ];
         }
     }
 
     /**
-     * Reject a friend request
      *
      * @param string $requestId
      * @return array
      */
     public function rejectFriendRequest(string $requestId): array
     {
-        $user = Auth::user();
-        $request = $this->friendRequestRepository->findFriendRequestById($requestId);
-
-        if (!$request) {
-            return [
-                'success' => false,
-                'message' => 'Lời mời kết bạn không tồn tại'
-            ];
-        }
-
-        // Check if current user is the receiver of the request
-        if ($request->receiver_id !== $user->user_id) {
-            return [
-                'success' => false,
-                'message' => 'You are not authorized to reject this request'
-            ];
+        // Validate the request
+        $validationResult = $this->validateFriendRequest($requestId);
+        if ($validationResult !== null) {
+            return $validationResult;
         }
 
         try {
@@ -141,13 +152,12 @@ class FriendService
         } catch (\Exception $e) {
             return [
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => 'Có lỗi xảy ra khi từ chối lời mời kết bạn'
             ];
         }
     }
 
     /**
-     * Get pending friend requests
      *
      * @return array
      */
@@ -177,11 +187,7 @@ class FriendService
         ];
     }
 
-    /**
-     * Get sent friend requests
-     *
-     * @return array
-     */
+
     public function getSentFriendRequests(): array
     {
         $user = Auth::user();
@@ -208,11 +214,6 @@ class FriendService
         ];
     }
 
-    /**
-     * Get user's friends list
-     *
-     * @return array
-     */
     public function getFriendsList(): array
     {
         $user = Auth::user();
@@ -235,34 +236,48 @@ class FriendService
         ];
     }
 
-    /**
-     * Remove a friend
-     *
-     * @param string $friendId
-     * @return array
-     */
+
     public function removeFriend(string $friendId): array
     {
         $user = Auth::user();
 
+        // Validate before removing friend
+        // Check if friend exists
+        $friend = $this->friendRepository->findUserById($friendId);
+        if (!$friend) {
+            return [
+                'success' => false,
+                'message' => 'Người dùng không tồn tại'
+            ];
+        }
+
+        // Check if trying to remove self
+        if ($user->user_id === $friendId) {
+            return [
+                'success' => false,
+                'message' => 'Bạn không thể xóa chính mình khỏi danh sách bạn bè'
+            ];
+        }
+
+        // Check if they are actually friends
+        if (!$this->friendRepository->areFriends($user->user_id, $friendId)) {
+            return [
+                'success' => false,
+                'message' => 'Bạn không phải bạn bè với người này'
+            ];
+        }
+
         try {
             $result = $this->friendRepository->removeFriendship($user->user_id, $friendId);
 
-            if ($result) {
-                return [
-                    'success' => true,
-                    'message' => 'Xóa bạn bè thành công',
-                ];
-            } else {
-                return [
-                    'success' => false,
-                    'message' => 'Bạn không phải bạn bè với người này'
-                ];
-            }
+            return [
+                'success' => true,
+                'message' => 'Xóa bạn bè thành công',
+            ];
         } catch (\Exception $e) {
             return [
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => 'Có lỗi xảy ra khi xóa bạn bè'
             ];
         }
     }
