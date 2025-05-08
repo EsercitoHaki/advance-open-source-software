@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Repositories\StoreItemRepository;
+use Illuminate\Support\Facades\Auth;
+use App\Exceptions\AppException;
 
 class StoreItemService
 {
@@ -15,17 +17,7 @@ class StoreItemService
 
     public function getAllItems()
     {
-        $items = $this->storeItemRepository->getItemsWithPurchaseStatus($userId);
-
-        if (is_null($items)) {
-            throw new AppException('Không thể lấy danh sách item từ cửa hàng.');
-        }
-
-        if ($items->isEmpty()) {
-            throw new AppException('Hiện tại không có item nào trong cửa hàng.');
-        }
-
-        return $items;
+        return $this->storeItemRepository->getAllItems();
     }
 
     public function getStoreItemsWithPurchaseStatus(string $userId)

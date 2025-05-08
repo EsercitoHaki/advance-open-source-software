@@ -26,9 +26,6 @@ class UserPurchaseService
         $this->storeItemRepository = $storeItemRepository;
     }
 
-    /**
-     * Xử lý mua item (tim hoặc linh vật) cho user
-     */
     public function purchaseItem($user, int $itemId): array
     {
         if (!$user) {
@@ -44,7 +41,7 @@ class UserPurchaseService
             if ($user->coins < $item->item_price) {
                 throw new AppException('Bạn không đủ xu để mua item này.');
             }
-            
+
             if (
                 $item->item_type === 'Lives' &&
                 $user->lives >= 5 &&
@@ -60,7 +57,6 @@ class UserPurchaseService
                 throw new AppException('Bạn đã mua linh vật này rồi.');
             }
 
-            // Trừ xu
             $user->coins -= $item->item_price;
             $user->save();
 
@@ -72,7 +68,6 @@ class UserPurchaseService
 
             $this->userPurchaseRepository->createPurchase($dto);
 
-            // Cộng tim nếu là Lives
             if ($item->item_type === 'Lives') {
                 $user->lives += $item->lives_amount ?? 0;
                 $user->save();
