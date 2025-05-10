@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Repositories\FriendRepositoryInterface;
-use App\Repositories\FriendRequestRepositoryInterface;
+use App\Repositories\Interfaces\FriendRepositoryInterface;
+use App\Repositories\Interfaces\FriendRequestRepositoryInterface;
 use App\DTOs\UserDTO;
 use App\Exceptions\InvalidParamException;
 use App\Exceptions\PremissionDenyException;

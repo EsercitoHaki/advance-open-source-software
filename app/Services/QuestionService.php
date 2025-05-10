@@ -4,7 +4,8 @@ namespace App\Services;
 
 use App\DTOs\QuestionDTO;
 use App\Exceptions\DataNotFoundException;
-use App\Repositories\QuestionRepositoryInterface;
+use App\Repositories\Interfaces\QuestionRepositoryInterface;
+use App\Services\Interfaces\QuestionServiceInterface;
 use Illuminate\Support\Collection;
 
 class QuestionService implements QuestionServiceInterface

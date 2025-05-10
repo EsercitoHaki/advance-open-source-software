@@ -4,7 +4,7 @@ namespace App\Repositories;
 
 use App\Models\Lesson;
 use Illuminate\Support\Collection;
-use App\Repositories\LessonRepositoryInterface;
+use App\Repositories\Interfaces\LessonRepositoryInterface;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;

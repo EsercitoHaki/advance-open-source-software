@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Services\QuestionServiceInterface;
-use App\Services\LessonServiceInterface;
-use App\Services\OptionServiceInterface;
+use App\Services\Interfaces\QuestionServiceInterface;
+use App\Services\Interfaces\LessonServiceInterface;
+use App\Services\Interfaces\OptionServiceInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Exceptions\DataNotFoundException;
@@ -203,7 +203,7 @@ class QuestionController extends Controller
 
             // Lấy danh sách câu hỏi của bài học
             $questions = $this->questionService->getQuestionsByLessonId($lessonId);
-            
+
             // Thêm options cho mỗi câu hỏi
             $questionsWithOptions = $questions->map(function ($question) {
                 $questionArray = $question->toArray();

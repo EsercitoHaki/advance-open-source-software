@@ -3,7 +3,8 @@
 namespace App\Services;
 
 use App\Models\Option;
-use App\Repositories\OptionRepositoryInterface;
+use App\Repositories\Interfaces\OptionRepositoryInterface;
+use App\Services\Interfaces\OptionServiceInterface;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 

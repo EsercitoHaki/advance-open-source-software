@@ -3,7 +3,8 @@
 namespace App\Services;
 
 use App\DTOs\LessonDTO;
-use App\Repositories\LessonRepositoryInterface;
+use App\Repositories\Interfaces\LessonRepositoryInterface;
+use App\Services\Interfaces\LessonServiceInterface;
 use Illuminate\Support\Collection;
 use App\Exceptions\DataNotFoundException;
 use Carbon\Carbon;

@@ -5,6 +5,8 @@ namespace App\Repositories;
 use App\Models\FriendRequest;
 use App\Models\Friend;
 use App\Exceptions\InvalidParamException;
+use App\Repositories\Interfaces\FriendRepositoryInterface;
+use App\Repositories\Interfaces\FriendRequestRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 
 class FriendRequestRepository extends BaseRepository implements FriendRequestRepositoryInterface

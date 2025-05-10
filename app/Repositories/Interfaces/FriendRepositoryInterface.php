@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories;
+namespace App\Repositories\Interfaces;
 
 use App\Models\Friend;
 use App\Models\User;

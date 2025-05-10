@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Interfaces;
 
 use App\DTOs\LessonDTO;
 use Illuminate\Support\Collection;

@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Models;
-
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -41,14 +41,17 @@ class Question extends Model
      * @var bool
      */
     public $timestamps = false;
-
+    public function options(): HasMany
+    {
+        return $this->hasMany(Option::class, 'question_id', 'question_id');
+    }
     /**
      * Quan hệ với model Lesson
      *
      * @return BelongsTo
      */
-    public function lesson(): BelongsTo
+    public function question(): BelongsTo
     {
-        return $this->belongsTo(Lesson::class, 'lesson_id', 'lesson_id');
+        return $this->belongsTo(Question::class, 'question_id', 'question_id');
     }
 }

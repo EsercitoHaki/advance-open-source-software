@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Question;
+use App\Repositories\Interfaces\QuestionRepositoryInterface;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 

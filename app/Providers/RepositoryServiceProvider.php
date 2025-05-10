@@ -7,25 +7,25 @@ use App\Repositories\AuthRepositoryInterface;
 use App\Repositories\AuthRepository;
 use App\Services\AuthServiceInterface;
 use App\Services\AuthService;
-use App\Repositories\LessonRepositoryInterface;
+use App\Repositories\Interfaces\LessonRepositoryInterface;
 use App\Repositories\LessonRepository;
-use App\Services\LessonServiceInterface;
+use App\Services\Interfaces\LessonServiceInterface;
 use App\Services\LessonService;
-use App\Repositories\QuestionRepositoryInterface;
+use App\Repositories\Interfaces\QuestionRepositoryInterface;
 use App\Repositories\QuestionRepository;
-use App\Services\QuestionServiceInterface;
+use App\Services\Interfaces\QuestionServiceInterface;
 use App\Services\QuestionService;
-use App\Repositories\UserProgressRepositoryInterface;
+use App\Repositories\Interfaces\UserProgressRepositoryInterface;
 use App\Repositories\UserProgressRepository;
-use App\Repositories\OptionRepositoryInterface;
+use App\Repositories\Interfaces\OptionRepositoryInterface;
 use App\Repositories\OptionRepository;
-use App\Services\OptionServiceInterface;
+use App\Services\Interfaces\OptionServiceInterface;
 use App\Services\OptionService;
-use App\Services\UserProgressServiceInterface;
+use App\Services\Interfaces\UserProgressServiceInterface;
 use App\Services\UserProgressService;
-use App\Repositories\FriendRepositoryInterface;
+use App\Repositories\Interfaces\FriendRepositoryInterface;
 use App\Repositories\FriendRepository;
-use App\Repositories\FriendRequestRepositoryInterface;
+use App\Repositories\Interfaces\FriendRequestRepositoryInterface;
 use App\Repositories\FriendRequestRepository;
 use App\Services\FriendService;
 
@@ -43,32 +43,32 @@ class RepositoryServiceProvider extends ServiceProvider
         );
 
         $this->app->bind(
-            \App\Repositories\LessonRepositoryInterface::class,
+            \App\Repositories\Interfaces\LessonRepositoryInterface::class,
             \App\Repositories\LessonRepository::class
         );
 
         $this->app->bind(
-            \App\Repositories\QuestionRepositoryInterface::class,
+            \App\Repositories\Interfaces\QuestionRepositoryInterface::class,
             \App\Repositories\QuestionRepository::class
         );
 
         $this->app->bind(
-            \App\Repositories\UserProgressRepositoryInterface::class,
+            \App\Repositories\Interfaces\UserProgressRepositoryInterface::class,
             \App\Repositories\UserProgressRepository::class
         );
 
         $this->app->bind(
-            \App\Repositories\OptionRepositoryInterface::class,
+            \App\Repositories\Interfaces\OptionRepositoryInterface::class,
             \App\Repositories\OptionRepository::class
         );
 
         $this->app->bind(
-            \App\Repositories\FriendRepositoryInterface::class,
+            \App\Repositories\Interfaces\FriendRepositoryInterface::class,
             \App\Repositories\FriendRepository::class
         );
 
         $this->app->bind(
-            \App\Repositories\FriendRequestRepositoryInterface::class,
+            \App\Repositories\Interfaces\FriendRequestRepositoryInterface::class,
             \App\Repositories\FriendRequestRepository::class
         );
 
@@ -79,22 +79,22 @@ class RepositoryServiceProvider extends ServiceProvider
         );
 
         $this->app->bind(
-            \App\Services\LessonServiceInterface::class,
+            \App\Services\Interfaces\LessonServiceInterface::class,
             \App\Services\LessonService::class
         );
 
         $this->app->bind(
-            \App\Services\QuestionServiceInterface::class,
+            \App\Services\Interfaces\QuestionServiceInterface::class,
             \App\Services\QuestionService::class
         );
 
         $this->app->bind(
-            \App\Services\OptionServiceInterface::class,
+            \App\Services\Interfaces\OptionServiceInterface::class,
             \App\Services\OptionService::class
         );
 
         $this->app->bind(
-            \App\Services\UserProgressServiceInterface::class,
+            \App\Services\Interfaces\UserProgressServiceInterface::class,
             \App\Services\UserProgressService::class
         );
 

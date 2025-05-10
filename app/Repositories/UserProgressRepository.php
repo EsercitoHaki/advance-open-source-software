@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\UserProgress;
+use App\Repositories\Interfaces\UserProgressRepositoryInterface;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
