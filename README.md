@@ -9,8 +9,9 @@ Làm theo các bước sau để thiết lập và chạy project:
 git clone https://github.com/EsercitoHaki/advance-open-source-software.git
 cd advance-open-source-software
 ```
-### 2. Cài đặt các dependency bằng Composer
+### 2. Cập nhật và cài đặt các dependency bằng Composer
 ```bash
+composer update
 composer install
 ```
 ### 3. Tạo file môi trường .env
