@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\Services\UserPurchaseService;
 use App\Exceptions\AppException;
-use App\Http\Requests\PurchaseRequest;
 use Illuminate\Http\Request;
 
 class UserPurchaseController extends Controller

@@ -40,4 +40,33 @@ class StoreItemController extends Controller
             ], 500);
         }
     }
+
+    public function getStoreItemsWithPurchaseStatus()
+    {
+        try {
+            $user = Auth::user();
+
+            if (!$user) {
+                throw new AppException('Người dùng không hợp lệ hoặc không tồn tại!');
+            }
+
+            $itemsStatus = $this->storeItemService->getStoreItemsWithPurchaseStatus($user->user_id);
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $itemsStatus
+            ], 200);
+
+        } catch (ExpiredTokenException $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ], 401);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Đã xảy ra lỗi: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }
