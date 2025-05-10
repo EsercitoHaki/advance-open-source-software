@@ -18,10 +18,10 @@ class StoreItemController extends Controller
         $this->storeItemService = $storeItemService;
     }
 
-    public function getStoreItems()
+    public function getStoreHeartItems()
     {
         try {
-            $items = $this->storeItemService->getAllItems();
+            $items = $this->storeItemService->getStoreHeartItems();
 
             return response()->json([
                 'status' => 'success',
@@ -41,7 +41,7 @@ class StoreItemController extends Controller
         }
     }
 
-    public function getStoreItemsWithPurchaseStatus()
+    public function getStoreMascotItems()
     {
         try {
             $user = Auth::user();
@@ -50,7 +50,7 @@ class StoreItemController extends Controller
                 throw new AppException('Người dùng không hợp lệ hoặc không tồn tại!');
             }
 
-            $itemsStatus = $this->storeItemService->getStoreItemsWithPurchaseStatus($user->user_id);
+            $itemsStatus = $this->storeItemService->getStoreMascotItems($user->user_id);
 
             return response()->json([
                 'status' => 'success',

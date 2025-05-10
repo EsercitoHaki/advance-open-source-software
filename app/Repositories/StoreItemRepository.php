@@ -6,7 +6,7 @@ use App\Models\StoreItem;
 
 class StoreItemRepository
 {
-    public function getAllItems()
+    public function getStoreHeartItems()
     {
         return StoreItem::where('is_active', 1)
         ->where('item_type', 'Lives')
@@ -18,7 +18,7 @@ class StoreItemRepository
         return StoreItem::find($itemId);
     }
 
-    public function getItemsWithPurchaseStatus(string $userId)
+    public function getStoreMascotItems(string $userId)
     {
         return StoreItem::where('item_type', 'Mascot')
             ->leftJoin('user_purchases', function ($join) use ($userId) {

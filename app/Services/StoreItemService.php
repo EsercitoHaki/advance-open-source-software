@@ -15,9 +15,9 @@ class StoreItemService
         $this->storeItemRepository = $storeItemRepository;
     }
 
-    public function getAllItems()
+    public function getStoreHeartItems()
     {
-        $items = $this->storeItemRepository->getAllItems();
+        $items = $this->storeItemRepository->getStoreHeartItems();
         if ($items->isEmpty()) {
             throw new AppException('Không có vật phẩm nào trong cửa hàng.');
         }
@@ -25,13 +25,13 @@ class StoreItemService
         return $items;
     }
 
-    public function getStoreItemsWithPurchaseStatus(string $userId)
+    public function getStoreMascotItems(string $userId)
     {
         if (!$userId) {
             throw new AppException('Người dùng không hợp lệ hoặc không tồn tại!');
         }
 
-        $itemsStatus = $this->storeItemRepository->getItemsWithPurchaseStatus($userId);
+        $itemsStatus = $this->storeItemRepository->getStoreMascotItems($userId);
 
         return $itemsStatus;
     }

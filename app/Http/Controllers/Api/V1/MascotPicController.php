@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Services\MascotPicService;
 use Illuminate\Http\Request;
 use App\Exceptions\AppException;
+use App\Exceptions\ExpiredTokenException;
 
 class MascotPicController extends Controller
 {
@@ -25,11 +26,16 @@ class MascotPicController extends Controller
                 'status' => 'success',
                 'data' => $pics,
             ]);
-        } catch (AppException $e) {
+       } catch (ExpiredTokenException $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => $e->getMessage(),
-            ], 400);
+                'message' => $e->getMessage()
+            ], 401);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Đã xảy ra lỗi: ' . $e->getMessage()
+            ], 500);
         }
     }
 
@@ -42,11 +48,16 @@ class MascotPicController extends Controller
                 'status' => 'success',
                 'data' => $pic,
             ]);
-        } catch (AppException $e) {
+        } catch (ExpiredTokenException $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => $e->getMessage(),
-            ], 400);
+                'message' => $e->getMessage()
+            ], 401);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Đã xảy ra lỗi: ' . $e->getMessage()
+            ], 500);
         }
     }
 }
