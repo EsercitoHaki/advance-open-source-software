@@ -14,7 +14,7 @@ class StoreItem extends Model
         'item_name',
         'item_type',
         'item_price',
-        'mascot_pic',
         'lives_amount',
+        'is_active',
     ];
 }

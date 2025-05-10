@@ -16,7 +16,6 @@ return new class extends Migration
             $table->unsignedBigInteger('mascot_id'); 
             $table->string('pic_name', 100); 
             $table->string('pic_url', 255); 
-            $table->timestamps();
             $table->foreign('mascot_id')->references('item_id')->on('store_items')->onDelete('cascade'); 
         });
     }

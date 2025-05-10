@@ -15,28 +15,28 @@ class StoreItemSeeder extends Seeder
                 'item_type' => 'Lives',
                 'item_price' => 20,
                 'lives_amount' => 1,
-                'mascot_pic' => null,
+                'is_active' => true,
             ],
             [
                 'item_name' => '5 Lives',
                 'item_type' => 'Lives',
                 'item_price' => 90,
                 'lives_amount' => 5,
-                'mascot_pic' => null,
+                'is_active' => true,
             ],
             [
                 'item_name' => 'Dragon Mascot',
                 'item_type' => 'Mascot',
                 'item_price' => 100,
                 'lives_amount' => null,
-                'mascot_pic' => 'dragon.png',
+                'is_active' => true,
             ],
             [
                 'item_name' => 'Cat Mascot',
                 'item_type' => 'Mascot',
                 'item_price' => 120,
                 'lives_amount' => null,
-                'mascot_pic' => 'cat.png',
+                'is_active' => true,
             ],
         ]);
     }

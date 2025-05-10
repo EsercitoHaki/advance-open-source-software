@@ -8,7 +8,7 @@ class StoreItemRepository
 {
     public function getAllItems()
     {
-        return StoreItem::all();
+        return StoreItem::where('is_active', 1)->get();
     }
 
     public function findItemById(int $itemId): ?StoreItem
@@ -26,7 +26,7 @@ class StoreItemRepository
                 'store_items.*',
                 \DB::raw('CASE WHEN user_purchases.item_id IS NULL THEN 0 ELSE 1 END as is_purchased')
             )
-            ->orderBy('is_purchased', 'asc') // ưu tiên những món chưa mua (is_purchased = 0)
+            ->orderBy('is_purchased', 'asc') 
             ->get();
     }
 

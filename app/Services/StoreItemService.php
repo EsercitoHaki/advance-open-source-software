@@ -17,13 +17,18 @@ class StoreItemService
 
     public function getAllItems()
     {
-        return $this->storeItemRepository->getAllItems();
+        $items = $this->storeItemRepository->getAllItems();
+        if ($items->isEmpty()) {
+            throw new AppException('Không có vật phẩm nào trong cửa hàng.');
+        }
+        
+        return $items;
     }
 
     public function getStoreItemsWithPurchaseStatus(string $userId)
     {
         if (!$userId) {
-            throw new AppException('Người dùng không hợp lệ.');
+            throw new AppException('Người dùng không hợp lệ hoặc không tồn tại!');
         }
 
         $itemsStatus = $this->storeItemRepository->getItemsWithPurchaseStatus($userId);

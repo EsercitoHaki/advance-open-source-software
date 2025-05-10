@@ -1,0 +1,31 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('friend_requests', function (Blueprint $table) {
+            $table->id('freind_request_id');
+            $table->enum('status', ['pending', 'accepted', 'declined'])->default('pending');
+            $table->timestamp('create_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('update_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->foreign('sender_id')->references('user_id')->on('users')->onDelete('cascade');
+            $table->foreign('receiver_id')->references('user_id')->on('users')->onDelete('cascade');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('friend_requests');
+    }
+};
