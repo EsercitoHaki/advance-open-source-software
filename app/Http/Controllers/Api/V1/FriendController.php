@@ -112,11 +112,23 @@ class FriendController extends Controller
     /**
      *
      * @return JsonResponse
-     */
-    public function getSentRequests(): JsonResponse
+     */    public function getSentRequests(): JsonResponse
     {
         $result = $this->friendService->getSentFriendRequests();
 
+        return response()->json($result, $result['success'] ? 200 : 400);
+    }
+    
+    /**
+     * Cancel a friend request that the user has sent
+     * 
+     * @param string $requestId
+     * @return JsonResponse
+     */
+    public function cancelFriendRequest(string $requestId): JsonResponse
+    {
+        $result = $this->friendService->cancelFriendRequest($requestId);
+        
         return response()->json($result, $result['success'] ? 200 : 400);
     }
 

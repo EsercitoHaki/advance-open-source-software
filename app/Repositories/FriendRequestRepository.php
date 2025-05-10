@@ -197,6 +197,35 @@ class FriendRequestRepository extends BaseRepository implements FriendRequestRep
             ->where('receiver_id', $receiverId)
             ->where('status', 'pending')
             ->first();
+    }    /**
+     * Cancel/delete a friend request sent by the user
+     *
+     * @param string $requestId
+     * @param string $userId
+     * @return bool
+     * @throws InvalidParamException
+     */
+    public function cancelFriendRequest(string $requestId, string $userId): bool
+    {
+        // Find the request
+        $request = $this->findFriendRequestById($requestId);
+        
+        if (!$request) {
+            throw new InvalidParamException('Không tìm thấy lời mời kết bạn');
+        }
+        
+        // Make sure the logged in user is the sender
+        if ($request->sender_id !== $userId) {
+            throw new InvalidParamException('Bạn không có quyền xóa lời mời kết bạn này');
+        }
+        
+        // Check if the request is still in pending state
+        if ($request->status !== 'pending') {
+            throw new InvalidParamException('Lời mời kết bạn đã được xử lý trước đó');
+        }
+        
+        // Delete the request
+        return $request->delete();
     }
 
     /**
