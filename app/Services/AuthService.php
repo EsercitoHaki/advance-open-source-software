@@ -7,7 +7,6 @@ use App\Repositories\AuthRepositoryInterface;
 use App\DTOs\AuthDTO;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
 use App\Exceptions\DataNotFoundException;
 
 class AuthService implements AuthServiceInterface
