@@ -27,6 +27,8 @@ use App\Repositories\Interfaces\FriendRepositoryInterface;
 use App\Repositories\FriendRepository;
 use App\Repositories\Interfaces\FriendRequestRepositoryInterface;
 use App\Repositories\FriendRequestRepository;
+use App\Repositories\Interfaces\UserRepositoryInterface;
+use App\Repositories\UserRepository;
 use App\Services\FriendService;
 
 
@@ -70,6 +72,11 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(
             \App\Repositories\Interfaces\FriendRequestRepositoryInterface::class,
             \App\Repositories\FriendRequestRepository::class
+        );
+
+        $this->app->bind(
+            \App\Repositories\Interfaces\UserRepositoryInterface::class,
+            \App\Repositories\UserRepository::class
         );
 
         // Đăng ký service bindings

@@ -4,6 +4,8 @@ namespace App\Repositories;
 
 use App\Models\User;
 use App\DTOs\UserDTO;
+use App\Repositories\Interfaces\UserRepositoryInterface;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 
 class UserRepository implements UserRepositoryInterface
@@ -25,7 +27,7 @@ class UserRepository implements UserRepositoryInterface
         if ($updateData) {
             $user->update($updateData);
         }
-        
+
         return $user;
     }
 
@@ -39,7 +41,7 @@ class UserRepository implements UserRepositoryInterface
     {
         $user->avatar = $avatarPath;
         $user->save();
-        
+
         return $user;
     }
 
@@ -52,5 +54,26 @@ class UserRepository implements UserRepositoryInterface
     public function getUserById(string $userId): ?User
     {
         return User::find($userId);
+    }
+
+    /**
+     * Get all users with optional username search
+     *
+     * @param string|null $username
+     * @return Collection
+     */
+    public function getAllUsers(?string $username = null): Collection
+    {
+        $query = User::query()->where('user_id', '!=', Auth::id());
+
+        if ($username) {
+            $query->where('username', 'like', '%' . $username . '%');
+        }
+
+        return $query->select([
+            'user_id',
+            'username',
+            'email',
+        ])->get();
     }
 }
