@@ -57,7 +57,7 @@ JWT_REFRESH_TTL=2592000
 
 ### 6. Setup config quên mật khẩu
 Thay đổi cấu hình file .env như sau:
-```bash
+```ini
 MAIL_MAILER=smtp
 MAIL_HOST=smtp.gmail.com
 MAIL_PORT=587
