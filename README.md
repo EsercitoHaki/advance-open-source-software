@@ -55,7 +55,22 @@ JWT_TTL=3600
 JWT_REFRESH_TTL=2592000
 ```
 
-### 6. Tạo Database
+### 6. Setup config quên mật khẩu
+Thay đổi cấu hình file .env như sau:
+```bash
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=huce.english.learning.lab@gmail.com
+MAIL_PASSWORD=nrckcovzzlkiwbbg
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=huce.english.learning.lab@gmail.com
+MAIL_FROM_NAME=HELL
+
+FRONTEND_URL=http://localhost:5173
+```
+
+### 7. Tạo Database
 Chạy lệnh sau để Laravel khởi tạo database cũng như bảng trong mysql
 ```bash
 php artisan migrate
