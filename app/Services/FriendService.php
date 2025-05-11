@@ -104,7 +104,7 @@ class FriendService
             ];
         }
 
-        return null; 
+        return null;
     }
 
     public function acceptFriendRequest(string $requestId): array
@@ -211,7 +211,7 @@ class FriendService
             ]
         ];
     }
-    
+
     /**
      * Cancel a friend request that the user has sent
      *
@@ -221,10 +221,10 @@ class FriendService
     public function cancelFriendRequest(string $requestId): array
     {
         $user = Auth::user();
-        
+
         try {
             $this->friendRequestRepository->cancelFriendRequest($requestId, $user->user_id);
-            
+
             return [
                 'success' => true,
                 'message' => 'Đã xóa lời mời kết bạn thành công'
