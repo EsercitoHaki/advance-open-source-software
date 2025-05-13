@@ -95,8 +95,8 @@ class UserController extends Controller
             'success' => true,
             'message' => 'Avatar uploaded successfully',
             'data' => [
-                    'avatar_path' => $avatarPath
-                ]
+                'avatar_path' => $avatarPath
+            ]
         ]);
     }
 
@@ -137,6 +137,44 @@ class UserController extends Controller
             return response()->json([
                 'error' => true,
                 'message' => 'Có lỗi xảy ra khi lấy danh sách người dùng: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Search users by username for friend requests
+     * 
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function searchUsers(Request $request): JsonResponse
+    {
+        try {
+            $request->validate([
+                'username' => 'required|string|min:1',
+                'limit' => 'nullable|integer|min:1|max:50'
+            ]);
+
+            $username = $request->query('username');
+            $limit = $request->query('limit', 10);
+
+            $users = $this->userService->searchUsersByUsername($username, $limit);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Tìm kiếm người dùng thành công',
+                'data' => $users
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Dữ liệu không hợp lệ',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => true,
+                'message' => 'Có lỗi xảy ra khi tìm kiếm người dùng: ' . $e->getMessage(),
             ], 500);
         }
     }

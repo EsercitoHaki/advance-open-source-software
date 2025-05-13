@@ -54,13 +54,20 @@ interface UserServiceInterface
      * @param bool $isNewRecord
      * @return UserDTO
      */
-    public function updateStreak(int $streak, bool $isNewRecord = false): UserDTO;
+    public function updateStreak(int $streak, bool $isNewRecord = false): UserDTO;    /**
+                 * Get all users with optional username search
+                 *
+                 * @param string|null $username
+                 * @return array
+                 */
+    public function getAllUsers(?string $username = null): array;
 
     /**
-     * Get all users with optional username search
+     * Search users by username
      *
-     * @param string|null $username
+     * @param string $username
+     * @param int $limit
      * @return array
      */
-    public function getAllUsers(?string $username = null): array;
+    public function searchUsersByUsername(string $username, int $limit = 10): array;
 }

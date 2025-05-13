@@ -74,6 +74,30 @@ class UserRepository implements UserRepositoryInterface
             'user_id',
             'username',
             'email',
+            'full_name',
+            'avatar'
         ])->get();
+    }
+
+    /**
+     * Search users by username
+     *
+     * @param string $username
+     * @param int $limit
+     * @return Collection
+     */
+    public function searchUsersByUsername(string $username, int $limit = 10): Collection
+    {
+        return User::query()
+            ->where('user_id', '!=', Auth::id())
+            ->where('username', 'like', '%' . $username . '%')
+            ->select([
+                'user_id',
+                'username',
+                'email',
+                'full_name',
+            ])
+            ->limit($limit)
+            ->get();
     }
 }

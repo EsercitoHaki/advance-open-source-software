@@ -57,13 +57,20 @@ interface UserRepositoryInterface
      * @param string $userId
      * @return User|null
      */
-    public function getUserById(string $userId): ?User;
+    public function getUserById(string $userId): ?User;    /**
+             * Get all users with optional username search
+             *
+             * @param string|null $username
+             * @return Collection
+             */
+    public function getAllUsers(?string $username = null): Collection;
 
     /**
-     * Get all users with optional username search
+     * Search users by username
      *
-     * @param string|null $username
+     * @param string $username
+     * @param int $limit
      * @return Collection
      */
-    public function getAllUsers(?string $username = null): Collection;
+    public function searchUsersByUsername(string $username, int $limit = 10): Collection;
 }

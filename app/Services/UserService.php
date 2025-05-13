@@ -104,4 +104,25 @@ class UserService implements UserServiceInterface
             ];
         })->toArray();
     }
+
+    /**
+     * Search users by username
+     *
+     * @param string $username
+     * @param int $limit
+     * @return array
+     */
+    public function searchUsersByUsername(string $username, int $limit = 10): array
+    {
+        $users = $this->userRepository->searchUsersByUsername($username, $limit);
+
+        return $users->map(function ($user) {
+            return [
+                'user_id' => $user->user_id,
+                'username' => $user->username,
+                'full_name' => $user->full_name ?? '',
+                'avatar' => $user->avatar,
+            ];
+        })->toArray();
+    }
 }
