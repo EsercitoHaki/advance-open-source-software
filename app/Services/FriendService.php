@@ -104,7 +104,7 @@ class FriendService
             ];
         }
 
-        return null; 
+        return null;
     }
 
     public function acceptFriendRequest(string $requestId): array
@@ -186,8 +186,6 @@ class FriendService
             ]
         ];
     }
-
-
     public function getSentFriendRequests(): array
     {
         $user = Auth::user();
@@ -212,6 +210,36 @@ class FriendService
                 'requests' => $formattedRequests
             ]
         ];
+    }
+
+    /**
+     * Cancel a friend request that the user has sent
+     *
+     * @param string $requestId
+     * @return array
+     */
+    public function cancelFriendRequest(string $requestId): array
+    {
+        $user = Auth::user();
+
+        try {
+            $this->friendRequestRepository->cancelFriendRequest($requestId, $user->user_id);
+
+            return [
+                'success' => true,
+                'message' => 'Đã xóa lời mời kết bạn thành công'
+            ];
+        } catch (InvalidParamException $e) {
+            return [
+                'success' => false,
+                'message' => $e->getMessage()
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Có lỗi xảy ra khi xóa lời mời kết bạn'
+            ];
+        }
     }
 
     public function getFriendsList(): array

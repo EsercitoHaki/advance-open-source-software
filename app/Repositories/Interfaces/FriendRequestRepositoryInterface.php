@@ -21,14 +21,20 @@ interface FriendRequestRepositoryInterface
      * @param string $userId
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function getReceivedFriendRequests(string $userId);
+    public function getReceivedFriendRequests(string $userId);    /**
+            *
+            * @param string $userId
+            * @return \Illuminate\Database\Eloquent\Collection
+            */
+    public function getSentFriendRequests(string $userId);
 
     /**
      *
+     * @param string $requestId
      * @param string $userId
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return bool
      */
-    public function getSentFriendRequests(string $userId);
+    public function cancelFriendRequest(string $requestId, string $userId): bool;
 
     /**
      *
