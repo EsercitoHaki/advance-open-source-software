@@ -10,8 +10,7 @@ class UserDTO
     public function __construct(
         public ?string $username,
         public ?string $email,
-        public ?string $firstName,
-        public ?string $lastName,
+        public ?string $fullName,
         public ?string $avatar = null,
         public ?int $roleId = null,
         public ?int $coins = null,
@@ -33,8 +32,7 @@ class UserDTO
         return new self(
             username: $request->get('username'),
             email: $request->get('email'),
-            firstName: $request->get('first_name'),  // Change from firstname to firstName
-            lastName: $request->get('last_name')
+            fullName: $request->get('full_name'),
         );
     }
 
@@ -50,8 +48,7 @@ class UserDTO
         return new self(
             username: $user->username,
             email: $user->email,
-            firstName: $user->first_name,
-            lastName: $user->last_name,
+            fullName: $user->full_name,
             avatar: $user->avatar,
             roleId: $user->role_id,
             coins: $user->coins,
@@ -73,8 +70,7 @@ class UserDTO
         return [
             'username' => $this->username,
             'email' => $this->email,
-            'first_name' => $this->firstName,
-            'last_name' => $this->lastName,
+            'full_name' => $this->fullName,
             'avatar' => $this->avatar,
             'role_id' => $this->roleId,
             'coins' => $this->coins,
