@@ -30,6 +30,10 @@ use App\Repositories\FriendRequestRepository;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 use App\Repositories\UserRepository;
 use App\Services\FriendService;
+use App\Repositories\Interfaces\MissionRepositoryInterface;
+use App\Repositories\MissionRepository;
+use App\Services\Interfaces\MissionServiceInterface;
+use App\Services\MissionService;
 
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -75,6 +79,11 @@ class RepositoryServiceProvider extends ServiceProvider
         );
 
         $this->app->bind(
+            \App\Repositories\Interfaces\MissionRepositoryInterface::class,
+            \App\Repositories\MissionRepository::class
+         );
+      
+        $this->app->bind(
             \App\Repositories\Interfaces\UserRepositoryInterface::class,
             \App\Repositories\UserRepository::class
         );
@@ -103,6 +112,11 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(
             \App\Services\Interfaces\UserProgressServiceInterface::class,
             \App\Services\UserProgressService::class
+        );
+
+        $this->app->bind(
+            \App\Services\Interfaces\MissionServiceInterface::class,
+            \App\Services\MissionService::class
         );
 
         // Register FriendService
