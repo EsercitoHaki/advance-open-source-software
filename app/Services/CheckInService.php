@@ -3,28 +3,25 @@
 namespace App\Services;
 
 use App\DTOs\CheckInDTO;
-use App\Exceptions\AppException;
 use App\Models\User;
+use App\Exceptions\AppException;
 use App\Repositories\CheckInRepository;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
-
-class CheckInService
+class CheckInService implements CheckInServiceInterface
 {
-    protected CheckInRepository $checkInRepository;
+    protected $checkInRepository;
 
     public function __construct(CheckInRepository $checkInRepository)
     {
         $this->checkInRepository = $checkInRepository;
     }
 
-    public function checkIn($user): array
+    public function checkIn(User $user): CheckInDTO
     {
         if (!$user) {
             throw new AppException('Người dùng không hợp lệ hoặc không tồn tại!');
-            return false;
         }
 
         $role = DB::table('roles')->where('role_id', $user->role_id)->value('role_name');
@@ -52,19 +49,19 @@ class CheckInService
         });
     }
 
-    public function getCheckInHistory(User $user)
+    public function getCheckInHistory(User $user): array
     {
         if (!$user) {
             throw new AppException('Người dùng không hợp lệ hoặc không tồn tại!');
-            return false;
         }
 
-        $checkInHistory = $user->checkins()->orderBy('checkin_date', 'desc')->get(['checkin_date', 'coins_earned']);
+        $checkInHistory = $user->checkins()->orderBy('checkin_date', 'desc')->get();
 
         if ($checkInHistory->isEmpty()) {
             throw new AppException('Không có lịch sử điểm danh.');
         }
-    
-        return $checkInHistory;    
+
+        return $checkInHistory->map(fn($checkin) => CheckInDTO::fromModel($checkin))->toArray();
     }
+
 }

@@ -26,6 +26,16 @@ class RepositoryServiceProvider extends ServiceProvider
             \App\Services\AuthServiceInterface::class,
             \App\Services\AuthService::class
         );
+
+        $this->app->bind(
+            \App\Repositories\CheckInRepositoryInterface::class,
+            \App\Repositories\CheckInRepository::class
+        );
+
+         $this->app->bind(
+            \App\Services\CheckInServiceInterface::class,
+            \App\Services\CheckInService::class
+        );
     }
 
     /**

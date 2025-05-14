@@ -7,7 +7,7 @@ use Carbon\Carbon;
 use App\DTOs\CheckInDTO; 
 use App\Exceptions\AppException;
 
-class CheckInRepository
+class CheckInRepository implements CheckInRepositoryInterface
 {
     public function create(CheckInDTO|array $data): CheckIn
     {

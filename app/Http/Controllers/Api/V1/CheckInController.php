@@ -6,12 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Services\CheckInService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
 use App\Exceptions\AppException;
 
 class CheckInController extends Controller
 {
-    protected CheckInService $checkInService;
+    protected $checkInService;
 
     public function __construct(CheckInService $checkInService)
     {
@@ -38,7 +37,7 @@ class CheckInController extends Controller
         }
     }
 
-    public function getHistory(Request $request): JsonResponse
+    public function getHistory(): JsonResponse
     {
         try {
             $user = Auth::user(); 
@@ -56,4 +55,3 @@ class CheckInController extends Controller
         } 
     }
 }
-
