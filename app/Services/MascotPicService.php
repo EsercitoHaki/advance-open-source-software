@@ -2,11 +2,13 @@
 
 namespace App\Services;
 
+use App\Repositories\MascotPicRepositoryInterface;
 use App\Repositories\MascotPicRepository;
-use App\Exceptions\AppException;    
-use Illuminate\Support\Facades\Auth;
+use App\Exceptions\AppException;
+use App\DTOs\MascotPicDTO;
+use App\Models\MascotPic;
 
-class MascotPicService
+class MascotPicService implements MascotPicServiceInterface
 {
     protected $mascotPicRepository;
 
@@ -15,26 +17,23 @@ class MascotPicService
         $this->mascotPicRepository = $mascotPicRepository;
     }
 
-    public function getMascotPics(int $mascotId)
+    public function getMascotPics(int $mascotId): array
     {
         $mascotPics = $this->mascotPicRepository->getMascotPics($mascotId);
         if ($mascotPics->isEmpty()) {
             throw new AppException('Hình ảnh linh vật không tồn tại.');
         }
-        
-        return $mascotPics;
+
+        return $mascotPics->map(fn($mascotpic) => MascotPicDTO::fromModel($mascotpic))->toArray();
     }
-    
-    public function getMainMascotPic(int $mascotId)
+
+    public function getMainMascotPic(int $mascotId): MascotPicDTO
     {
-        $mascotPic = $this->mascotPicRepository->getMainMascotPic($mascotId);
-        
-        if (!$mascotPic) {
-            throw new AppException('Không tìm thấy hình ảnh chính cho linh vật này.');
+        $mainPic = $this->mascotPicRepository->getMainMascotPic($mascotId);
+        if (!$mainPic) {
+            throw new AppException('Hình ảnh chính của linh vật không tồn tại.');
         }
 
-        return $mascotPic;
+        return MascotPicDTO::fromModel($mainPic);
     }
-
-
 }

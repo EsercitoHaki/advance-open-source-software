@@ -2,6 +2,8 @@
 
 namespace App\DTOs;
 
+use App\Models\StoreItem;
+
 class StoreItemDTO
 {
     public readonly string $item_name;
@@ -24,14 +26,15 @@ class StoreItemDTO
         $this->lives_amount = $lives_amount;
     }
 
-    public function toArray(): array
+    public static function fromModel(StoreItem $item): self
     {
-        return [
-            'item_name' => $this->item_name,
-            'item_type' => $this->item_type,
-            'item_price' => $this->item_price,
-            'mascot_pic' => $this->mascot_pic,
-            'lives_amount' => $this->lives_amount,
-        ];
+        return new self(
+            $item->item_name,
+            $item->item_type,
+            $item->item_price,
+            $item->mascot_pic ?? null,
+            $item->lives_amount ?? null
+        );
     }
+
 }

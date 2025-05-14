@@ -13,7 +13,7 @@ use App\Repositories\UserPurchaseRepository;
 use App\Repositories\StoreItemRepository;
 use App\Exceptions\AppException;
 
-class UserPurchaseService
+class UserPurchaseService implements UserPurchaseServiceInterface
 {
     protected $userPurchaseRepository;
     protected $storeItemRepository;
@@ -66,7 +66,7 @@ class UserPurchaseService
                 purchase_date: Carbon::now()->toDateTimeString()
             );
 
-            $this->userPurchaseRepository->createPurchase($dto);
+            $this->userPurchaseRepository->createPurchase($dto->toArray());
 
             if ($item->item_type === 'Lives') {
                 $user->lives += $item->lives_amount ?? 0;
@@ -84,7 +84,7 @@ class UserPurchaseService
     /**
      * Lấy lịch sử mua item của user
      */
-    public function getPurchaseHistory($user)
+    public function getPurchaseHistory($user): array
     {
         if (!$user) {
             throw new AppException('Người dùng không hợp lệ hoặc không tồn tại!');
@@ -96,6 +96,6 @@ class UserPurchaseService
             throw new AppException('Không có lịch sử mua item.');
         }
 
-        return $purchaseHistory;
+        return $purchaseHistory->map(fn($userpurchase) => UserPurchaseDTO::fromModel($userpurchase))->toArray();
     }
 }

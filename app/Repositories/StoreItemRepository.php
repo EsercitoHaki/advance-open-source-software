@@ -3,10 +3,12 @@
 namespace App\Repositories;
 
 use App\Models\StoreItem;
+use Illuminate\Support\Collection;
+use App\Repositories\StoreItemRepositoryInterface;
 
-class StoreItemRepository
+class StoreItemRepository implements StoreItemRepositoryInterface
 {
-    public function getStoreHeartItems()
+    public function getStoreHeartItems(): Collection
     {
         return StoreItem::where('is_active', 1)
         ->where('item_type', 'Lives')
@@ -18,7 +20,7 @@ class StoreItemRepository
         return StoreItem::find($itemId);
     }
 
-    public function getStoreMascotItems(string $userId)
+    public function getStoreMascotItems(string $userId): Collection
     {
         return StoreItem::where('item_type', 'Mascot')
             ->leftJoin('user_purchases', function ($join) use ($userId) {

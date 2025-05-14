@@ -32,9 +32,39 @@ class RepositoryServiceProvider extends ServiceProvider
             \App\Repositories\CheckInRepository::class
         );
 
-         $this->app->bind(
+        $this->app->bind(
             \App\Services\CheckInServiceInterface::class,
             \App\Services\CheckInService::class
+        );
+
+        $this->app->bind(
+            \App\Repositories\MascotPicRepositoryInterface::class,
+            \App\Repositories\MascotPicRepository::class
+        );
+
+        $this->app->bind(
+            \App\Services\MascotPicServiceInterface::class,
+            \App\Services\MascotPicService::class
+        );
+
+        $this->app->bind(
+            \App\Repositories\StoreItemRepositoryInterface::class,
+            \App\Repositories\StoreItemRepository::class
+        );
+
+        $this->app->bind(
+            \App\Services\StoreItemServiceInterface::class,
+            \App\Services\StoreItemService::class
+        );
+
+        $this->app->bind(
+            \App\Repositories\UserPurchaseRepositoryInterface::class,
+            \App\Repositories\UserPurchaseRepository::class
+        );
+
+        $this->app->bind(
+            \App\Services\UserPurchaseServiceInterface::class,
+            \App\Services\UserPurchaseService::class
         );
     }
 

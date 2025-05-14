@@ -6,6 +6,8 @@ use App\Models\CheckIn;
 use Carbon\Carbon;
 use App\DTOs\CheckInDTO; 
 use App\Exceptions\AppException;
+use App\Models\User;
+use Illuminate\Support\Collection;
 
 class CheckInRepository implements CheckInRepositoryInterface
 {
@@ -23,5 +25,12 @@ class CheckInRepository implements CheckInRepositoryInterface
             }
             throw $e;
         }
+    }
+
+     public function getCheckInHistory(User $user): Collection
+    {
+        return $user->checkins()
+            ->orderBy('checkin_date', 'desc')
+            ->get();
     }
 }

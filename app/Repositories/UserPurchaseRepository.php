@@ -4,15 +4,17 @@ namespace App\Repositories;
 
 use App\Models\UserPurchase;
 use App\DTOs\UserPurchaseDTO;
+use Illuminate\Support\Collection;
+use App\Repositories\UserPurchaseRepositoryInterface;
 
-class UserPurchaseRepository
+class UserPurchaseRepository implements UserPurchaseRepositoryInterface
 {
-    public function createPurchase(UserPurchaseDTO $data): UserPurchase
+    public function createPurchase(array $data): UserPurchase
     {
-        return UserPurchase::create($data->toArray());
+        return UserPurchase::create($data);
     }
 
-    public function getPurchasesByUserId(string $userId)
+    public function getPurchasesByUserId(string $userId): Collection
     {
         return UserPurchase::where('user_id', $userId)->get();
     }

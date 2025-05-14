@@ -8,6 +8,8 @@ use App\Exceptions\AppException;
 use App\Repositories\CheckInRepository;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
+
 
 class CheckInService implements CheckInServiceInterface
 {
@@ -55,7 +57,7 @@ class CheckInService implements CheckInServiceInterface
             throw new AppException('Người dùng không hợp lệ hoặc không tồn tại!');
         }
 
-        $checkInHistory = $user->checkins()->orderBy('checkin_date', 'desc')->get();
+        $checkInHistory = $this->checkInRepository->getCheckInHistory($user);
 
         if ($checkInHistory->isEmpty()) {
             throw new AppException('Không có lịch sử điểm danh.');
