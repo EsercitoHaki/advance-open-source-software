@@ -73,41 +73,72 @@ class UserDailyMissionService implements UserDailyMissionServiceInterface
     {
         $today = Carbon::today()->toDateString();
         $userMission = $this->repository->getUserMissionByDateAndMission($userId, $missionId, $today);
-        
-        if (!$userMission) {
+
+        if (!$userMission || $userMission->is_completed) {
             return null;
         }
-        
+
         $userMission->progress += $progressIncrement;
-        
-        if ($userMission->progress >= $userMission->mission->required_count && !$userMission->is_completed) {
+
+        if ($userMission->progress >= $userMission->mission->required_count) {
             $userMission->is_completed = true;
         }
-        
+
         $userMission->save();
-        
+
         return UserDailyMissionDTO::fromModel($userMission);
     }
 
     public function claimMissionReward(string $userId, int $userMissionId): ?UserDailyMissionDTO
     {
         $userMission = $this->repository->getById($userMissionId);
-        
-        if (!$userMission || $userMission->user_id !== $userId) {
+
+        if (!$userMission || $userMission->user_id !== $userId || $userMission->date !== Carbon::today()->toDateString()) {
             return null;
         }
-        
+
         if (!$userMission->is_completed || $userMission->reward_claimed) {
             return null;
         }
-        
+
+        $user = User::find($userId);
+        if (!$user) {
+            return null;
+        }
+
+        $user->coins += $userMission->mission->reward_coins;
+        $user->save();
+
         $userMission->reward_claimed = true;
         $userMission->save();
-        
-        // Add coins to user (assuming you have a user service/repository for this)
-        // This would be implemented with your user point/coin system
-        // $userService->addCoins($userId, $userMission->mission->reward_coins);
-        
+
         return UserDailyMissionDTO::fromModel($userMission);
     }
+
+
+    public function recordAction(string $userId, string $action): void
+    {
+        $today = Carbon::today()->toDateString();
+
+        $missions = $this->repository->getUserMissionsByDate($userId, $today)
+            ->filter(function ($userMission) use ($action) {
+                return !$userMission->is_completed &&
+                    $userMission->mission &&
+                    $userMission->mission->required_action === $action &&
+                    $userMission->progress < $userMission->mission->required_count;
+            });
+
+        foreach ($missions as $mission) {
+            $mission->progress++;
+
+            if ($mission->progress >= $mission->mission->required_count) {
+                $mission->is_completed = true;
+            }
+
+            $mission->save();
+        }
+    }
+
+
+
 }

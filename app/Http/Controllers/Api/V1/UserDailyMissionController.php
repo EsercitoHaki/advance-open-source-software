@@ -17,9 +17,6 @@ class UserDailyMissionController extends Controller
         $this->userDailyMissionService = $userDailyMissionService;
     }
 
-    /**
-     * Get daily missions for the authenticated user
-     */
     public function getDailyMissions(): JsonResponse
     {
         $userId = Auth::id();
@@ -31,9 +28,6 @@ class UserDailyMissionController extends Controller
         ]);
     }
 
-    /**
-     * Update mission progress
-     */
     public function updateProgress(Request $request, int $missionId): JsonResponse
     {
         $userId = Auth::id();
@@ -59,9 +53,6 @@ class UserDailyMissionController extends Controller
         ]);
     }
 
-    /**
-     * Claim reward for a completed mission
-     */
     public function claimReward(int $userMissionId): JsonResponse
     {
         $userId = Auth::id();

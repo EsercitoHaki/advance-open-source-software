@@ -25,17 +25,11 @@ class UserDailyMission extends Model
         'reward_claimed' => 'boolean'
     ];
 
-    /**
-     * Get the mission that belongs to this user daily mission
-     */
     public function mission(): BelongsTo
     {
         return $this->belongsTo(Mission::class, 'mission_id', 'mission_id');
     }
 
-    /**
-     * Get the user that owns this daily mission
-     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id', 'user_id');
