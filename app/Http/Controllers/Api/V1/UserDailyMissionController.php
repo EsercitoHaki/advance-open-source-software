@@ -41,15 +41,15 @@ class UserDailyMissionController extends Controller
         
         if (!$updatedMission) {
             return response()->json([
-                'message' => 'Mission not found for today'
+                'message' => 'Không tìm thấy nhiệm vụ hôm nay hoặc nhiệm vụ đã hoàn thành.'
             ], 404);
         }
         
         return response()->json([
             'mission' => $updatedMission,
             'message' => $updatedMission->is_completed 
-                ? 'Mission completed! You can now claim your reward.' 
-                : 'Progress updated successfully.'
+                ? 'Đã hoàn thành nhiệm vụ! Bạn có thể nhận phần thưởng.' 
+                : 'Cập nhật tiến độ thành công.'
         ]);
     }
 
@@ -60,13 +60,13 @@ class UserDailyMissionController extends Controller
         
         if (!$result) {
             return response()->json([
-                'message' => 'Cannot claim reward. Either the mission is not completed, already claimed, or not found.'
+                'message' => 'Không thể nhận phần thưởng. Nhiệm vụ chưa hoàn thành, đã nhận thưởng hoặc không tồn tại.'
             ], 400);
         }
         
         return response()->json([
             'mission' => $result,
-            'message' => 'Reward claimed successfully! You earned ' . $result->mission->reward_coins . ' coins.'
+            'message' => 'Nhận phần thưởng thành công! Bạn nhận được ' . $result->mission->reward_coins . ' xu.'
         ]);
     }
 }
