@@ -10,6 +10,7 @@ use App\Repositories\Interfaces\UserDailyMissionRepositoryInterface;
 use App\Services\Interfaces\UserDailyMissionServiceInterface;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class UserDailyMissionService implements UserDailyMissionServiceInterface
 {
@@ -22,124 +23,242 @@ class UserDailyMissionService implements UserDailyMissionServiceInterface
 
     public function getUserDailyMissions(string $userId): array
     {
-        $today = Carbon::today()->toDateString();
-        $missions = $this->repository->getUserMissionsByDate($userId, $today);
-        
-        if (count($missions) === 0) {
-            $missions = $this->generateDailyMissions($userId);
+        try {
+            $today = Carbon::today()->toDateString();
+            $missions = $this->repository->getUserMissionsByDate($userId, $today);
+            
+            if (empty($missions)) {
+                $missions = $this->generateDailyMissions($userId);
+            }
+            
+            return array_map(fn($mission) => UserDailyMissionDTO::fromModel($mission), $missions);
+        } catch (\Exception $e) {
+            Log::error('Lỗi khi lấy nhiệm vụ hàng ngày: ' . $e->getMessage(), [
+                'user_id' => $userId,
+                'trace' => $e->getTraceAsString()
+            ]);
+            throw $e;
         }
-        
-        return array_map(fn($mission) => UserDailyMissionDTO::fromModel($mission), $missions);
     }
 
     public function generateDailyMissions(string $userId): array
     {
         $today = Carbon::today()->toDateString();
-        
-        $randomMissions = Mission::where('is_active', true)
+        $userDailyMissions = [];
+
+        $existingMissions = $this->repository->getUserMissionsByDate($userId, $today);
+        $existingActions = collect($existingMissions)->pluck('mission.required_action')->toArray();
+
+        $availableMissions = Mission::query()
+            ->where('is_active', true)
+            ->whereNotIn('required_action', $existingActions)
             ->inRandomOrder()
-            ->limit(3)
-            ->get();
-            
-        if ($randomMissions->count() === 0) {
+            ->get(['mission_id', 'required_count', 'required_action', 'reward_coins']);
+
+        $randomMissions = $availableMissions->unique('required_action')->take(3);
+
+        if ($randomMissions->isEmpty()) {
             return [];
         }
-        
-        $userDailyMissions = [];
-        
+
         DB::beginTransaction();
         try {
+            $missionData = [];
             foreach ($randomMissions as $mission) {
-                $userDailyMission = $this->repository->create([
+                $missionData[] = [
                     'user_id' => $userId,
                     'mission_id' => $mission->mission_id,
                     'date' => $today,
                     'progress' => 0,
                     'is_completed' => false,
-                    'reward_claimed' => false
-                ]);
-                
-                $userDailyMissions[] = $userDailyMission;
+                    'reward_claimed' => false,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ];
             }
+
+            $this->repository->createMany($missionData);
+
+            $userDailyMissions = $this->repository->getUserMissionsByDate($userId, $today);
+
             DB::commit();
         } catch (\Exception $e) {
             DB::rollback();
+            Log::error('Lỗi khi tạo nhiệm vụ hàng ngày: ' . $e->getMessage(), [
+                'user_id' => $userId,
+                'trace' => $e->getTraceAsString()
+            ]);
             throw $e;
         }
-        
+
         return $userDailyMissions;
     }
 
+
     public function updateMissionProgress(string $userId, int $missionId, int $progressIncrement = 1): ?UserDailyMissionDTO
     {
-        $today = Carbon::today()->toDateString();
-        $userMission = $this->repository->getUserMissionByDateAndMission($userId, $missionId, $today);
+        try {
+            DB::beginTransaction();
+            
+            $today = Carbon::today()->toDateString();
+            $userMission = $this->repository->getUserMissionByDateAndMission($userId, $missionId, $today);
 
-        if (!$userMission || $userMission->is_completed) {
+            if (!$userMission) {
+            DB::rollback();
+            throw new \Exception('Không tìm thấy nhiệm vụ tương ứng cho người dùng.');
+            }
+
+            if ($userMission->is_completed) {
+                DB::rollback();
+                throw new \Exception('Nhiệm vụ đã được hoàn thành.');
+            }
+
+            $userMission->progress += max(1, $progressIncrement);
+
+            if ($userMission->progress >= $userMission->mission->required_count) {
+                $userMission->is_completed = true;
+                $userMission->progress = $userMission->mission->required_count;
+            }
+
+            $userMission->save();
+            DB::commit();
+
+            return UserDailyMissionDTO::fromModel($userMission);
+        } catch (\Exception $e) {
+            DB::rollback();
+            Log::error('Lỗi khi cập nhật tiến độ nhiệm vụ: ' . $e->getMessage(), [
+                'user_id' => $userId,
+                'mission_id' => $missionId,
+                'trace' => $e->getTraceAsString()
+            ]);
             return null;
         }
-
-        $userMission->progress += $progressIncrement;
-
-        if ($userMission->progress >= $userMission->mission->required_count) {
-            $userMission->is_completed = true;
-        }
-
-        $userMission->save();
-
-        return UserDailyMissionDTO::fromModel($userMission);
     }
 
     public function claimMissionReward(string $userId, int $userMissionId): ?UserDailyMissionDTO
     {
-        $userMission = $this->repository->getById($userMissionId);
+        try {
+            DB::beginTransaction();
+            
+            $userMission = $this->repository->getById($userMissionId, ['mission']);
 
-        if (!$userMission || $userMission->user_id !== $userId || Carbon::parse($userMission->date)->toDateString() !== Carbon::today()->toDateString()) {
+            if (!$userMission) {
+                DB::rollback();
+                throw new \Exception('Không tìm thấy nhiệm vụ.');
+            }
+
+            if ($userMission->user_id !== $userId || Carbon::parse($userMission->date)->toDateString() !== Carbon::today()->toDateString()) {
+                DB::rollback();
+                throw new \Exception('Không thể nhận phần thưởng cho nhiệm vụ không thuộc về bạn hoặc không phải hôm nay.');
+            }
+
+            if (!$userMission->is_completed) {
+                DB::rollback();
+                throw new \Exception('Nhiệm vụ chưa được hoàn thành.');
+            }
+
+            if ($userMission->reward_claimed) {
+                DB::rollback();
+                throw new \Exception('Phần thưởng đã được nhận.');
+            }
+
+            $user = User::lockForUpdate()->find($userId);
+            if (!$user) {
+                DB::rollback();
+                throw new \Exception('Không tìm thấy người dùng.');
+            }
+
+            $user->coins += $userMission->mission->reward_coins;
+            $user->save();
+
+            $userMission->reward_claimed = true;
+            $userMission->save();
+
+            DB::commit();
+            return UserDailyMissionDTO::fromModel($userMission);
+        } catch (\Exception $e) {
+            DB::rollback();
+            Log::error('Lỗi khi nhận phần thưởng nhiệm vụ: ' . $e->getMessage(), [
+                'user_id' => $userId,
+                'user_mission_id' => $userMissionId,
+                'trace' => $e->getTraceAsString()
+            ]);
             return null;
         }
-
-        if (!$userMission->is_completed || $userMission->reward_claimed) {
-            return null;
-        }
-
-        $user = User::find($userId);
-        if (!$user) {
-            return null;
-        }
-
-        $user->coins += $userMission->mission->reward_coins;
-        $user->save();
-
-        $userMission->reward_claimed = true;
-        $userMission->save();
-
-        return UserDailyMissionDTO::fromModel($userMission);
     }
 
 
     public function recordAction(string $userId, string $action): void
     {
-        $today = Carbon::today()->toDateString();
-
-        $missions = $this->repository->getUserMissionsByDate($userId, $today)
-            ->filter(function ($userMission) use ($action) {
-                return !$userMission->is_completed &&
-                    $userMission->mission &&
-                    $userMission->mission->required_action === $action &&
-                    $userMission->progress < $userMission->mission->required_count;
-            });
-
-        foreach ($missions as $mission) {
-            $mission->progress++;
-
-            if ($mission->progress >= $mission->mission->required_count) {
-                $mission->is_completed = true;
+        try {
+            $today = Carbon::today()->toDateString();
+            
+            $affectedMissions = $this->repository->getUserMissionsForAction($userId, $today, $action);
+            
+            if (empty($affectedMissions)) {
+                return;
             }
+            
+            DB::beginTransaction();
+            
+            foreach ($affectedMissions as $mission) {
+                $mission->progress = min($mission->progress + 1, $mission->mission->required_count);
 
-            $mission->save();
+                if ($mission->progress >= $mission->mission->required_count) {
+                    $mission->is_completed = true;
+                    $mission->progress = $mission->mission->required_count;
+
+                    // NotificationService::sendMissionCompleted($userId, $mission->mission_id);
+                }
+
+                $mission->save();
+            }
+            
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+            Log::error('Lỗi khi ghi nhận hành động người dùng: ' . $e->getMessage(), [
+                'user_id' => $userId,
+                'action' => $action,
+                'trace' => $e->getTraceAsString()
+            ]);
         }
     }
 
+    public function completeMission(string $userId, int $missionId): ?UserDailyMissionDTO
+    {
+        try {
+            DB::beginTransaction();
+            
+            $today = Carbon::today()->toDateString();
+            $userMission = $this->repository->getUserMissionByDateAndMission($userId, $missionId, $today);
 
+            if (!$userMission) {
+                DB::rollback();
+                throw new \Exception('Không tìm thấy nhiệm vụ.');
+            }
+
+            if ($userMission->is_completed) {
+                DB::rollback();
+                throw new \Exception('Nhiệm vụ đã hoàn thành.');
+            }
+
+            $userMission->progress = $userMission->mission->required_count;
+            $userMission->is_completed = true;
+            $userMission->save();
+            
+            DB::commit();
+            
+            return UserDailyMissionDTO::fromModel($userMission);
+        } catch (\Exception $e) {
+            DB::rollback();
+            Log::error('Lỗi khi hoàn thành nhiệm vụ: ' . $e->getMessage(), [
+                'user_id' => $userId,
+                'mission_id' => $missionId,
+                'trace' => $e->getTraceAsString()
+            ]);
+            return null;
+        }
+    }
 
 }
