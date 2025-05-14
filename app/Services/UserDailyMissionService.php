@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Mission;
+use App\Models\User;
 use App\Models\UserDailyMission;
 use App\DTOs\UserDailyMissionDTO;
 use App\Repositories\Interfaces\UserDailyMissionRepositoryInterface;
@@ -93,7 +94,7 @@ class UserDailyMissionService implements UserDailyMissionServiceInterface
     {
         $userMission = $this->repository->getById($userMissionId);
 
-        if (!$userMission || $userMission->user_id !== $userId || $userMission->date !== Carbon::today()->toDateString()) {
+        if (!$userMission || $userMission->user_id !== $userId || Carbon::parse($userMission->date)->toDateString() !== Carbon::today()->toDateString()) {
             return null;
         }
 
