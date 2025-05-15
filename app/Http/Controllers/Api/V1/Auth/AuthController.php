@@ -8,13 +8,11 @@ use App\Http\Requests\RegisterRequest;
 use App\Services\AuthServiceInterface;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
 use App\Exceptions\DataNotFoundException;
 use Illuminate\Support\Facades\Password;
 use App\Exceptions\ExpiredTokenException;
 use Illuminate\Support\Facades\Hash;
 use App\DTOs\AuthDTO;
-use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -85,6 +83,22 @@ class AuthController extends Controller
             return response()->json([
                 'error' => true,
                 'message' => 'Token đã hết hạn, vui lòng đăng nhập lại',
+            ], 401);
+        }
+    }
+
+    public function getUser()
+    {
+        try {
+            $user = $this->authService->getAuthenticatedUser();
+            return response()->json([
+                'user' => $user
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => true,
+                'message' => 'Không thể lấy thông tin người dùng',
+                'debug' => config('app.debug') ? $e->getMessage() : null
             ], 401);
         }
     }
