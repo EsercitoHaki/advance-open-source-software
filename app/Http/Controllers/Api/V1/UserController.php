@@ -97,7 +97,8 @@ class UserController extends Controller
             'success' => true,
             'message' => 'Avatar uploaded successfully',
             'data' => [
-                'avatar_path' => $avatarPath
+                'avatar_url' => asset('storage/' . $avatarPath),
+                'avatar_path' => $avatarPath,
             ]
         ]);
     }

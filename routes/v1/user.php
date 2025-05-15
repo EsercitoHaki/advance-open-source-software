@@ -12,4 +12,3 @@ Route::middleware(['jwt.auth'])->group(function () {
     Route::post('/user/avatar', [UserController::class, 'uploadAvatar']);
     Route::get('/user/stats', [UserController::class, 'getStats']);
 });
-

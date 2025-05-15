@@ -8,9 +8,9 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/forgot-password', [AuthController::class, 'sendResetLink']);
 Route::put('/reset-password', [AuthController::class, 'reset']);
+Route::post('/refresh', [AuthController::class, 'refresh']);
 
 Route::middleware(['jwt.auth'])->group(function () {
     Route::get('/user', [AuthController::class, 'getUser']);
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::post('/refresh', [AuthController::class, 'refresh']);
 });

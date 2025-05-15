@@ -24,8 +24,18 @@ class AuthService implements AuthServiceInterface
         
         $user = $this->authRepository->create($userData);
 
+        $token = JWTAuth::fromUser($user);
+        
+        if (!$token) {
+            return [
+                'error' => 'Không thể tạo được token!',
+                'status' => 500
+            ];
+        }
+
         return [
             'message' => 'Đăng ký thành công!',
+            'token' => $token,
             'user' => $user
         ];
     }
@@ -68,8 +78,10 @@ class AuthService implements AuthServiceInterface
     
     public function refreshToken()
     {
+        $newToken = JWTAuth::parseToken()->refresh();
         return [
-            'token' => JWTAuth::refresh(JWTAuth::getToken())
+            'token' => $newToken,
+            'user' => JWTAuth::setToken($newToken)->toUser()
         ];
     }
 }
