@@ -14,4 +14,3 @@ Route::middleware(['jwt.auth'])->group(function () {
     Route::get('/users', [UserController::class, 'getAllUsers']);
     Route::get('/users/search', [UserController::class, 'searchUsers']);
 });
-

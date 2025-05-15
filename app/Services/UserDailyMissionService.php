@@ -145,7 +145,10 @@ class UserDailyMissionService implements UserDailyMissionServiceInterface
                 throw new \Exception('Không tìm thấy nhiệm vụ.');
             }
 
-            if ($userMission->user_id !== $userId) {
+            if (
+                $userMission->user_id !== $userId ||
+                Carbon::parse($userMission->date)->isSameDay(Carbon::today()) === false
+            ) {
                 DB::rollback();
                 throw new \Exception('Không thể nhận phần thưởng cho nhiệm vụ không thuộc về bạn hoặc không phải hôm nay.');
             }

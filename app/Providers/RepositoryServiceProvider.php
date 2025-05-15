@@ -42,6 +42,10 @@ use App\Repositories\CommentRepository;
 use App\Repositories\Interfaces\CommentRepositoryInterface;
 use App\Services\CommentService;
 use App\Services\Interfaces\CommentServiceInterface;
+use App\Repositories\Interfaces\LeaderboardRepositoryInterface;
+use App\Repositories\LeaderboardRepository;
+use App\Services\Interfaces\LeaderboardServiceInterface;
+use App\Services\LeaderboardService;
 
 class RepositoryServiceProvider extends ServiceProvider
 {
@@ -95,6 +99,11 @@ class RepositoryServiceProvider extends ServiceProvider
             \App\Repositories\UserRepository::class
         );
 
+        $this->app->bind(
+            \App\Repositories\Interfaces\LeaderboardRepositoryInterface::class,
+            \App\Repositories\LeaderboardRepository::class
+        );
+
         // Đăng ký service bindings
         $this->app->bind(
             \App\Services\AuthServiceInterface::class,
@@ -124,6 +133,11 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(
             \App\Services\Interfaces\MissionServiceInterface::class,
             \App\Services\MissionService::class
+        );
+
+        $this->app->bind(
+            \App\Services\Interfaces\LeaderboardServiceInterface::class,
+            \App\Services\LeaderboardService::class
         );
 
         $this->app->bind(MissionRepositoryInterface::class, MissionRepository::class);
