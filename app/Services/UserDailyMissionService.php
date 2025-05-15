@@ -72,8 +72,6 @@ class UserDailyMissionService implements UserDailyMissionServiceInterface
                     'progress' => 0,
                     'is_completed' => false,
                     'reward_claimed' => false,
-                    'created_at' => Carbon::now(),
-                    'updated_at' => Carbon::now(),
                 ];
             }
 

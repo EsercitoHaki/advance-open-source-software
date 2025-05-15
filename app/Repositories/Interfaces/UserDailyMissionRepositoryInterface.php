@@ -13,4 +13,5 @@ interface UserDailyMissionRepositoryInterface
     public function delete(int $id): void;
     public function getUserMissionsByDate(string $userId, string $date): array;
     public function getUserMissionByDateAndMission(string $userId, int $missionId, string $date): ?UserDailyMission;
+    public function createMany(array $data): void;
 }

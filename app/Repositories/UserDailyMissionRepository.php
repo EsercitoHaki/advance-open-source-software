@@ -60,4 +60,9 @@ class UserDailyMissionRepository implements UserDailyMissionRepositoryInterface
             ->with('mission')
             ->first();
     }
+
+    public function createMany(array $data): void
+    {
+        UserDailyMission::insert($data);
+    }
 }
