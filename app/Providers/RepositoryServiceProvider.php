@@ -38,11 +38,14 @@ use App\Repositories\Interfaces\UserDailyMissionRepositoryInterface;
 use App\Repositories\UserDailyMissionRepository;
 use App\Services\Interfaces\UserDailyMissionServiceInterface;
 use App\Services\UserDailyMissionService;
+use App\Repositories\CommentRepository;
+use App\Repositories\Interfaces\CommentRepositoryInterface;
+use App\Services\CommentService;
+use App\Services\Interfaces\CommentServiceInterface;
 use App\Repositories\Interfaces\LeaderboardRepositoryInterface;
 use App\Repositories\LeaderboardRepository;
 use App\Services\Interfaces\LeaderboardServiceInterface;
 use App\Services\LeaderboardService;
-
 
 class RepositoryServiceProvider extends ServiceProvider
 {
@@ -146,6 +149,10 @@ class RepositoryServiceProvider extends ServiceProvider
 
         // Register FriendService
         $this->app->singleton(FriendService::class);
+        
+        // Comment
+        $this->app->bind(CommentRepositoryInterface::class, CommentRepository::class);
+        $this->app->bind(CommentServiceInterface::class, CommentService::class);
     }
 
     /**
