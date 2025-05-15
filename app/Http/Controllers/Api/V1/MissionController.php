@@ -41,6 +41,6 @@ class MissionController extends Controller
     public function destroy($id): JsonResponse
     {
         $this->missionService->delete($id);
-        return response()->json(['message' => 'Deleted successfully']);
+        return response()->json(['message' => 'Xóa thành công!']);
     }
 }

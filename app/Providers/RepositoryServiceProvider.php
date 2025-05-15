@@ -34,6 +34,10 @@ use App\Repositories\Interfaces\MissionRepositoryInterface;
 use App\Repositories\MissionRepository;
 use App\Services\Interfaces\MissionServiceInterface;
 use App\Services\MissionService;
+use App\Repositories\Interfaces\UserDailyMissionRepositoryInterface;
+use App\Repositories\UserDailyMissionRepository;
+use App\Services\Interfaces\UserDailyMissionServiceInterface;
+use App\Services\UserDailyMissionService;
 
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -118,6 +122,13 @@ class RepositoryServiceProvider extends ServiceProvider
             \App\Services\Interfaces\MissionServiceInterface::class,
             \App\Services\MissionService::class
         );
+
+        $this->app->bind(MissionRepositoryInterface::class, MissionRepository::class);
+        $this->app->bind(MissionServiceInterface::class, MissionService::class);
+        
+        // User Daily Mission bindings
+        $this->app->bind(UserDailyMissionRepositoryInterface::class, UserDailyMissionRepository::class);
+        $this->app->bind(UserDailyMissionServiceInterface::class, UserDailyMissionService::class);
 
         // Register FriendService
         $this->app->singleton(FriendService::class);
