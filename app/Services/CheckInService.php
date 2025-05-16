@@ -35,7 +35,7 @@ class CheckInService implements CheckInServiceInterface
             $coins = 10;
         
             // Ghi nhận điểm danh
-            $checkIn = $this->checkInRepository->create(
+            $checkInDTO = $this->checkInRepository->create(
                 new CheckInDTO($user->user_id, Carbon::now('Asia/Ho_Chi_Minh')->toDateString(), $coins)
             );
         
@@ -43,11 +43,7 @@ class CheckInService implements CheckInServiceInterface
             $user->increment('coins', $coins);
             $user->refresh(); 
         
-            return [
-                'checkin_date' => $checkIn->checkin_date,
-                'coins_earned' => $checkIn->coins_earned,
-                'total_coins' => $user->coins, 
-            ];
+            return CheckInDTO::fromModel($checkInDTO);
         });
     }
 

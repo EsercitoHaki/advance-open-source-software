@@ -27,7 +27,7 @@ class CheckInController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Điểm danh thành công',
-                'data' => $checkInResult,
+                'data' => $checkInResult->toArray()
             ]);
         } catch (AppException $e) {
             return response()->json([
