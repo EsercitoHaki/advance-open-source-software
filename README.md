@@ -76,3 +76,8 @@ Chạy lệnh sau để Laravel khởi tạo database cũng như bảng trong my
 php artisan migrate
 ```
 
+### 8. Tạo một symbolic link
+Lưu vị trí file upload
+```bash
+php artisan storage:link
+```
