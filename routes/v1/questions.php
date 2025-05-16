@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\QuestionController;
+use App\Http\Controllers\Api\V1\AudioController;
 
 Route::middleware(['jwt.auth'])->group(function () {
     Route::group(['prefix' => 'questions'], function () {
@@ -22,6 +23,8 @@ Route::middleware(['jwt.auth'])->group(function () {
 
         // Xóa câu hỏi
         Route::delete('/{id}', [QuestionController::class, 'destroy']);
+        //upload audio
+        Route::post('/{questionId}/audio', [AudioController::class, 'uploadAudio']);
     });
 
     // Lấy thông tin bài học kèm câu hỏi

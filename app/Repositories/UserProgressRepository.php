@@ -160,7 +160,8 @@ class UserProgressRepository extends BaseRepository implements UserProgressRepos
             $stats = [
                 'total_lessons' => 0,
                 'completed_lessons' => 0,
-                'average_score' => 0
+                'average_score' => 0,
+                'longest_streak' => 0
             ];
 
             // Lấy tổng số bài học đã bắt đầu

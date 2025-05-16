@@ -33,6 +33,7 @@ class Question extends Model
         'question_text',
         // đã loại bỏ correct_answer
         'explanation',
+        'audio_file',
     ];
 
     /**
@@ -54,4 +55,36 @@ class Question extends Model
     {
         return $this->belongsTo(Question::class, 'question_id', 'question_id');
     }
+    /**
+     * Quan hệ với model LESSON
+     *
+     * @return BelongsTo
+     */
+    public function lesson(): BelongsTo
+    {
+        return $this->belongsTo(Lesson::class, 'lesson_id', 'lesson_id');
+    }
+/**
+ * Kiểm tra xem câu hỏi có file âm thanh không
+ *
+ * @return bool
+ */
+public function hasAudio(): bool
+{
+    return !empty($this->audio_file);
+}
+
+/**
+ * Lấy đường dẫn đầy đủ tới file âm thanh
+ *
+ * @return string|null
+ */
+public function getAudioUrl(): ?string
+{
+    if (!$this->hasAudio()) {
+        return null;
+    }
+    
+    return url('storage/audios/' . $this->audio_file);
+}
 }

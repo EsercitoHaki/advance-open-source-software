@@ -8,6 +8,7 @@ use App\Exceptions\InvalidParamException;
 use App\Models\UserProgress;
 use App\Repositories\Interfaces\QuestionRepositoryInterface;
 use App\Repositories\Interfaces\UserProgressRepositoryInterface;
+use App\Repositories\Interfaces\UserRepositoryInterface;
 use App\Services\Interfaces\UserProgressServiceInterface;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -26,17 +27,25 @@ class UserProgressService implements UserProgressServiceInterface
     protected $questionRepository;
 
     /**
+     * @var UserRepositoryInterface
+     */
+    protected $userRepository;
+
+    /**
      * UserProgressService constructor.
      *
      * @param UserProgressRepositoryInterface $userProgressRepository
      * @param QuestionRepositoryInterface $questionRepository
+     * @param UserRepositoryInterface $userRepository
      */
     public function __construct(
         UserProgressRepositoryInterface $userProgressRepository,
-        QuestionRepositoryInterface $questionRepository
+        QuestionRepositoryInterface $questionRepository,
+        UserRepositoryInterface $userRepository
     ) {
         $this->userProgressRepository = $userProgressRepository;
         $this->questionRepository = $questionRepository;
+        $this->userRepository = $userRepository;
     }
 
     /**
@@ -227,9 +236,7 @@ class UserProgressService implements UserProgressServiceInterface
 
             if (!$question || $question->lesson_id != $lessonId) {
                 throw new InvalidParamException('Câu hỏi không hợp lệ hoặc không thuộc về bài học này');
-            }
-
-            // Kiểm tra xem đáp án có đúng không
+            }            // Kiểm tra xem đáp án có đúng không
             $isCorrect = DB::table('options')
                 ->where('option_id', $selectedOptionId)
                 ->where('question_id', $questionId)
@@ -238,6 +245,17 @@ class UserProgressService implements UserProgressServiceInterface
 
             // Tính điểm cho câu hỏi này
             $earnedScore = $isCorrect ? $question->score : 0;
+
+            // Nếu câu trả lời sai, trừ 1 mạng của người dùng
+            if (!$isCorrect) {
+                $user = $this->userRepository->getUserById($userId);
+                if ($user) {
+                    $lives = $user->lives ?? 5; // Mặc định là 5 nếu không có
+                    if ($lives > 0) {
+                        $this->userRepository->updateStats($user, ['lives' => $lives - 1]);
+                    }
+                }
+            }
 
             // Lấy thông tin về đáp án đã chọn và đáp án đúng
             $selectedOption = DB::table('options')
@@ -328,13 +346,30 @@ class UserProgressService implements UserProgressServiceInterface
     public function getUserLearningStats(string $userId): array
     {
         try {
-            $stats = $this->userProgressRepository->getUserLearningStats($userId);
+            // Lấy thông tin người dùng
+            $user = $this->userRepository->getUserById($userId);
+            if (!$user) {
+                throw new DataNotFoundException('Không tìm thấy người dùng');
+            }
 
-            // Tạo DTO từ dữ liệu thống kê
+            // Lấy thông tin học tập
+            $learningStats = $this->userProgressRepository->getUserLearningStats($userId);
+
+            // Tạo learningProgress object
+            $learningProgress = [
+                'completed_lessons' => $learningStats['completed_lessons'],
+                'mastered_words' => 0,  // Placeholder hoặc dữ liệu từ nguồn khác nếu có
+                'total_lessons' => $learningStats['total_lessons'],
+                'average_score' => $learningStats['average_score']
+            ];
+
+            // Tạo DTO từ thông tin người dùng và dữ liệu học tập
             $statsDTO = new UserStatsDTO(
-                $stats['total_lessons'],
-                $stats['completed_lessons'],
-                $stats['average_score']
+                $user->coins ?? 0,
+                $user->lives ?? 5,
+                $user->current_streak ?? 0,
+                $user->longest_streak ?? 0,
+                $learningProgress
             );
 
             return $statsDTO->toArray();
