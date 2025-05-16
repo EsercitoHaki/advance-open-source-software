@@ -4,7 +4,7 @@ namespace App\Repositories;
 
 use App\Models\MascotPic;
 use Illuminate\Support\Collection;
-use App\Repositories\MascotPicRepositoryInterface;
+use App\Repositories\Interfaces\MascotPicRepositoryInterface;
 
 class MascotPicRepository implements MascotPicRepositoryInterface
 {

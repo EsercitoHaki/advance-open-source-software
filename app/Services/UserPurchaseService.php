@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use App\Repositories\UserPurchaseRepository;
 use App\Repositories\StoreItemRepository;
 use App\Exceptions\AppException;
+use App\Services\Interfaces\UserPurchaseServiceInterface;
 
 class UserPurchaseService implements UserPurchaseServiceInterface
 {

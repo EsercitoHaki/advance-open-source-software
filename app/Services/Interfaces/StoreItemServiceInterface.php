@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Interfaces;
+
+use App\Repositories\Interfaces\StoreItemRepositoryInterface;
 
 interface StoreItemServiceInterface
 {

@@ -9,7 +9,7 @@ use App\Repositories\CheckInRepository;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
-
+use App\Services\Interfaces\CheckInServiceInterface;
 
 class CheckInService implements CheckInServiceInterface
 {
@@ -41,7 +41,7 @@ class CheckInService implements CheckInServiceInterface
         
             // Cộng xu vào user
             $user->increment('coins', $coins);
-            $user->refresh(); // lấy lại dữ liệu mới sau khi update
+            $user->refresh(); 
         
             return [
                 'checkin_date' => $checkIn->checkin_date,
@@ -64,6 +64,23 @@ class CheckInService implements CheckInServiceInterface
         }
 
         return $checkInHistory->map(fn($checkin) => CheckInDTO::fromModel($checkin))->toArray();
+    }
+
+    public function getCheckInDateHistory(User $user): array
+    {
+        if (!$user) {
+            throw new AppException('Người dùng không hợp lệ hoặc không tồn tại!');
+        }
+
+        $checkInDateHistory = $this->checkInRepository->getCheckInDateHistory($user);
+
+        if ($checkInDateHistory->isEmpty()) {
+            throw new AppException('Không có lịch sử điểm danh.');
+        }
+
+        return $checkInDateHistory->map(fn($checkin) => [
+        'checkin_date' => $checkin->checkin_date,
+        ])->toArray();
     }
 
 }

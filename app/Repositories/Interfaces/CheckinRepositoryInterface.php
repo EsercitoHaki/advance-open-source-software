@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories;
+namespace App\Repositories\Interfaces;
 
 use App\DTOs\CheckInDTO;
 use App\Models\CheckIn;
@@ -12,5 +12,5 @@ interface CheckInRepositoryInterface
 {
     public function create(CheckInDTO|array $data): CheckIn;
     public function getCheckInHistory(User $user): Collection;
-
+    public function getCheckInDateHistory(User $user): Collection;
 }

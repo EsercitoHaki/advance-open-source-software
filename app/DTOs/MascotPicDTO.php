@@ -19,11 +19,12 @@ class MascotPicDTO
 
     public static function fromModel(MascotPic $mascotPic): self
     {
-        return new self(
-            pic_id: $mascotPic->pic_id,
-            pic_name: $mascotPic->pic_name,
-            pic_url: $mascotPic->pic_url,
-        );
+        return new self([
+            'pic_id' => $mascotPic->pic_id,
+            'pic_name' => $mascotPic->pic_name,
+            'pic_url' => $mascotPic->pic_url,
+        ]);
     }
+
 
 }

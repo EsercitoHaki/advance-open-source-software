@@ -4,7 +4,7 @@ namespace App\Repositories;
 
 use App\Models\StoreItem;
 use Illuminate\Support\Collection;
-use App\Repositories\StoreItemRepositoryInterface;
+use App\Repositories\Interfaces\StoreItemRepositoryInterface;
 
 class StoreItemRepository implements StoreItemRepositoryInterface
 {

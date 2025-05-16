@@ -5,7 +5,7 @@ namespace App\Repositories;
 use App\Models\UserPurchase;
 use App\DTOs\UserPurchaseDTO;
 use Illuminate\Support\Collection;
-use App\Repositories\UserPurchaseRepositoryInterface;
+use App\Repositories\Interfaces\UserPurchaseRepositoryInterface;
 
 class UserPurchaseRepository implements UserPurchaseRepositoryInterface
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Interfaces;
 
-use App\Repositories\MascotPicRepositoryInterface;
+use App\Repositories\Interfaces\MascotPicRepositoryInterface;
 use App\DTOs\MascotPicDTO;
 
 interface MascotPicServiceInterface

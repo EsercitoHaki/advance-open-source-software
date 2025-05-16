@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\User;
 use App\DTOs\UserDTO;
 use Illuminate\Support\Facades\Auth;
+use App\Repositories\Interfaces\UserRepositoryInterface;
 
 class UserRepository implements UserRepositoryInterface
 {

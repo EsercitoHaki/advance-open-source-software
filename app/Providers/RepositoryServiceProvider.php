@@ -28,42 +28,42 @@ class RepositoryServiceProvider extends ServiceProvider
         );
 
         $this->app->bind(
-            \App\Repositories\CheckInRepositoryInterface::class,
+            \App\Repositories\Interfaces\CheckInRepositoryInterface::class,
             \App\Repositories\CheckInRepository::class
         );
 
         $this->app->bind(
-            \App\Services\CheckInServiceInterface::class,
+            \App\Services\Interfaces\CheckInServiceInterface::class,
             \App\Services\CheckInService::class
         );
 
         $this->app->bind(
-            \App\Repositories\MascotPicRepositoryInterface::class,
+            \App\Repositories\Interfaces\MascotPicRepositoryInterface::class,
             \App\Repositories\MascotPicRepository::class
         );
 
         $this->app->bind(
-            \App\Services\MascotPicServiceInterface::class,
+            \App\Services\Interfaces\MascotPicServiceInterface::class,
             \App\Services\MascotPicService::class
         );
 
         $this->app->bind(
-            \App\Repositories\StoreItemRepositoryInterface::class,
+            \App\Repositories\Interfaces\StoreItemRepositoryInterface::class,
             \App\Repositories\StoreItemRepository::class
         );
 
         $this->app->bind(
-            \App\Services\StoreItemServiceInterface::class,
+            \App\Services\Interfaces\StoreItemServiceInterface::class,
             \App\Services\StoreItemService::class
         );
 
         $this->app->bind(
-            \App\Repositories\UserPurchaseRepositoryInterface::class,
+            \App\Repositories\Interfaces\UserPurchaseRepositoryInterface::class,
             \App\Repositories\UserPurchaseRepository::class
         );
 
         $this->app->bind(
-            \App\Services\UserPurchaseServiceInterface::class,
+            \App\Services\Interfaces\UserPurchaseServiceInterface::class,
             \App\Services\UserPurchaseService::class
         );
     }

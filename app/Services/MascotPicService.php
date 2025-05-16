@@ -2,8 +2,9 @@
 
 namespace App\Services;
 
-use App\Repositories\MascotPicRepositoryInterface;
+use App\Repositories\Interfaces\MascotPicRepositoryInterface;
 use App\Repositories\MascotPicRepository;
+use App\Services\Interfaces\MascotPicServiceInterface;
 use App\Exceptions\AppException;
 use App\DTOs\MascotPicDTO;
 use App\Models\MascotPic;

@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Repositories\StoreItemRepository;
 use Illuminate\Support\Facades\Auth;
 use App\Exceptions\AppException;
-use App\Services\StoreItemServiceInterface;
+use App\Services\Interfaces\StoreItemServiceInterface;
 use App\DTOs\StoreItemDTO;
 use App\Models\StoreItem;
 
