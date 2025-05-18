@@ -88,19 +88,33 @@ class UserProgressService implements UserProgressServiceInterface
             Log::error('Lỗi khi lấy tất cả tiến độ học tập: ' . $e->getMessage());
             throw $e;
         }
-    }
-
-    /**
-     * Bắt đầu một bài học
-     *
-     * @param string $userId
-     * @param int $lessonId
-     * @return UserProgress
-     */
+    }    /**
+         * Bắt đầu một bài học
+         *
+         * @param string $userId
+         * @param int $lessonId
+         * @return UserProgress
+         * @throws InvalidParamException
+         */
     public function startLesson(string $userId, int $lessonId): UserProgress
     {
         try {
+            // Kiểm tra số mạng của người dùng trước khi cho phép bắt đầu bài học
+            $user = $this->userRepository->getUserById($userId);
+            if (!$user) {
+                throw new DataNotFoundException('Không tìm thấy người dùng');
+            }
+
+            $lives = $user->lives ?? 5; // Mặc định là 5 nếu không có
+            if ($lives <= 0) {
+                throw new InvalidParamException('Bạn đã hết mạng. Vui lòng đợi để mạng được phục hồi hoặc mua thêm mạng để tiếp tục học.');
+            }
+
             return $this->userProgressRepository->startLesson($userId, $lessonId);
+        } catch (DataNotFoundException $e) {
+            throw $e;
+        } catch (InvalidParamException $e) {
+            throw $e;
         } catch (\Exception $e) {
             Log::error('Lỗi khi bắt đầu bài học: ' . $e->getMessage());
             throw $e;

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 
+use App\Exceptions\InvalidParamException;
 use App\Http\Controllers\Controller;
 use App\Services\Interfaces\UserProgressServiceInterface;
 use Illuminate\Http\JsonResponse;
@@ -97,6 +98,12 @@ class UserProgressController extends Controller
                 'message' => 'Bắt đầu bài học thành công',
                 'data' => $progress
             ]);
+        } catch (InvalidParamException $e) {
+            // Xử lý riêng cho trường hợp hết mạng
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 403); // 403 Forbidden - không có quyền tiếp tục học
         } catch (\Exception $e) {
             Log::error('Lỗi khi bắt đầu bài học: ' . $e->getMessage());
             return response()->json([
