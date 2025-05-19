@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('title', 100);
             $table->text('description');
             $table->integer('reward_coins')->default(10); 
+            $table->string('required_action', 100);
             $table->integer('required_count')->default(1); 
             $table->boolean('is_active')->default(true); 
         });
