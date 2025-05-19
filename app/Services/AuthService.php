@@ -24,6 +24,12 @@ class AuthService implements AuthServiceInterface
         
         $user = $this->authRepository->create($userData);
 
+        $user = $this->authRepository->findByEmail($authDTO->email);
+        
+        if (!$user || !Hash::check($authDTO->password, $user->password)) {
+            throw new DataNotFoundException('Tài khoản hoặc mật khẩu không đúng!');
+        }
+
         $token = JWTAuth::fromUser($user);
         
         if (!$token) {
