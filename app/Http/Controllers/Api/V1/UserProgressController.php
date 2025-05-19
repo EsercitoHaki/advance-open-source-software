@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 
+use App\Exceptions\DataNotFoundException;
 use App\Exceptions\InvalidParamException;
 use App\Http\Controllers\Controller;
 use App\Services\Interfaces\UserProgressServiceInterface;
@@ -125,12 +126,15 @@ class UserProgressController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'answers' => 'required|array',
-            'answers.*' => 'integer|exists:options,option_id'
+            'answers.*' => 'integer|exists:options,option_id',
+            'elapsed_time' => 'nullable|integer|min:0'
         ], [
             'answers.required' => 'Thiếu danh sách câu trả lời',
             'answers.array' => 'Danh sách câu trả lời phải ở dạng mảng',
             'answers.*.integer' => 'ID của đáp án phải là số nguyên',
-            'answers.*.exists' => 'Đáp án không tồn tại'
+            'answers.*.exists' => 'Đáp án không tồn tại',
+            'elapsed_time.integer' => 'Thời gian phải là số nguyên',
+            'elapsed_time.min' => 'Thời gian không được âm'
         ]);
 
         if ($validator->fails()) {
@@ -143,13 +147,27 @@ class UserProgressController extends Controller
         try {
             $userId = auth()->user()->user_id;
             $userAnswers = $request->input('answers');
-            $result = $this->userProgressService->completeLesson($userId, $lessonId, $userAnswers);
+            $elapsedTime = $request->input('elapsed_time', 0);
+            $result = $this->userProgressService->completeLesson($userId, $lessonId, $userAnswers, $elapsedTime);
 
             return response()->json([
                 'success' => true,
                 'message' => 'Hoàn thành bài học thành công',
                 'data' => $result
             ]);
+        } catch (InvalidParamException $e) {
+            // Xử lý riêng cho trường hợp hết thời gian
+            if (strpos($e->getMessage(), 'Thời gian làm bài đã hết') !== false) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                    'error_code' => 'TIME_LIMIT_EXCEEDED'
+                ], 403); // 403 Forbidden - không cho phép tiếp tục làm bài
+            }
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 400);
         } catch (\Exception $e) {
             Log::error('Lỗi khi hoàn thành bài học: ' . $e->getMessage());
             return response()->json([
@@ -171,11 +189,14 @@ class UserProgressController extends Controller
     public function submitAnswer(Request $request, int $lessonId, int $questionId): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'option_id' => 'required|integer|exists:options,option_id'
+            'option_id' => 'required|integer|exists:options,option_id',
+            'elapsed_time' => 'nullable|integer|min:0'
         ], [
             'option_id.required' => 'Thiếu ID đáp án được chọn',
             'option_id.integer' => 'ID đáp án phải là số nguyên',
-            'option_id.exists' => 'Đáp án không tồn tại'
+            'option_id.exists' => 'Đáp án không tồn tại',
+            'elapsed_time.integer' => 'Thời gian phải là số nguyên',
+            'elapsed_time.min' => 'Thời gian không được âm'
         ]);
 
         if ($validator->fails()) {
@@ -188,11 +209,13 @@ class UserProgressController extends Controller
         try {
             $userId = auth()->user()->user_id;
             $selectedOptionId = $request->input('option_id');
+            $elapsedTime = $request->input('elapsed_time', 0);
             $result = $this->userProgressService->submitSingleAnswer(
                 $userId,
                 $lessonId,
                 $questionId,
-                $selectedOptionId
+                $selectedOptionId,
+                $elapsedTime
             );
 
             return response()->json([
@@ -200,6 +223,19 @@ class UserProgressController extends Controller
                 'message' => 'Nộp câu trả lời thành công',
                 'data' => $result
             ]);
+        } catch (InvalidParamException $e) {
+            // Xử lý riêng cho trường hợp hết thời gian
+            if (strpos($e->getMessage(), 'Thời gian làm bài đã hết') !== false) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                    'error_code' => 'TIME_LIMIT_EXCEEDED'
+                ], 403); // 403 Forbidden - không cho phép tiếp tục làm bài
+            }
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 400);
         } catch (\Exception $e) {
             Log::error('Lỗi khi nộp câu trả lời: ' . $e->getMessage());
             return response()->json([

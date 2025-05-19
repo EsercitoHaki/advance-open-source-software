@@ -19,20 +19,19 @@ class UserProgress extends Model
      *
      * @var string
      */
-    protected $primaryKey = 'progress_id';
-
-    /**
-     * Chỉ định các cột có thể gán giá trị hàng loạt
-     *
-     * @var array<int, string>
-     */
+    protected $primaryKey = 'progress_id';    /**
+            * Chỉ định các cột có thể gán giá trị hàng loạt
+            *
+            * @var array<int, string>
+            */
     protected $fillable = [
         'user_id',
         'lesson_id',
         'completion_status',
         'score',
         'start_date',
-        'completion_date'
+        'completion_date',
+        'elapsed_time'
     ];
 
     /**
