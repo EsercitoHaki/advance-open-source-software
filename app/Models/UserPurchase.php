@@ -13,6 +13,7 @@ class UserPurchase extends Model
     protected $fillable = [
         'user_id',
         'item_id',
+        'active',
         'purchase_date',
     ];
 }
