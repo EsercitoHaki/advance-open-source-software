@@ -20,7 +20,9 @@ class JwtMiddleware
         try {
             $user = JWTAuth::parseToken()->authenticate();
         } catch (JWTException $e) {
-            return response()->json(['error' => 'Token not valid'], 401);
+            return response()->json(['status' => 'error', 'message' => 'Token không tồn tại'], 401);
+        } catch (ExpiredTokenException $e) {
+            return response()->json(['status' => 'error', 'message' => 'Token đã hết hạn'], 401);
         }
 
         return $next($request);

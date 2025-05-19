@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id('lesson_id'); 
             $table->string('title', 100); 
             $table->enum('category', ['Grammar', 'Vocabulary', 'Listening', 'Reading']);
+            $table->text('content');
             $table->timestamp('created_date')->default(DB::raw('CURRENT_TIMESTAMP'));
         });
     }
