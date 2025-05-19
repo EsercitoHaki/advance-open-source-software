@@ -4,6 +4,8 @@ namespace App\Repositories;
 
 use App\Models\User;
 use App\DTOs\UserDTO;
+use App\Repositories\Interfaces\UserRepositoryInterface;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 
@@ -19,14 +21,13 @@ class UserRepository implements UserRepositoryInterface
         $updateData = array_filter([
             'username' => $userDTO->username,
             'email' => $userDTO->email,
-            'first_name' => $userDTO->firstName,
-            'last_name' => $userDTO->lastName,
+            'full_name' => $userDTO->fullName,
         ], fn($value) => $value !== null);
 
         if ($updateData) {
             $user->update($updateData);
         }
-        
+
         return $user;
     }
 
@@ -40,7 +41,7 @@ class UserRepository implements UserRepositoryInterface
     {
         $user->avatar = $avatarPath;
         $user->save();
-        
+
         return $user;
     }
 
@@ -53,5 +54,50 @@ class UserRepository implements UserRepositoryInterface
     public function getUserById(string $userId): ?User
     {
         return User::find($userId);
+    }
+
+    /**
+     * Get all users with optional username search
+     *
+     * @param string|null $username
+     * @return Collection
+     */
+    public function getAllUsers(?string $username = null): Collection
+    {
+        $query = User::query()->where('user_id', '!=', Auth::id());
+
+        if ($username) {
+            $query->where('username', 'like', '%' . $username . '%');
+        }
+
+        return $query->select([
+            'user_id',
+            'username',
+            'email',
+            'full_name',
+            'avatar'
+        ])->get();
+    }
+
+    /**
+     * Search users by username
+     *
+     * @param string $username
+     * @param int $limit
+     * @return Collection
+     */
+    public function searchUsersByUsername(string $username, int $limit = 10): Collection
+    {
+        return User::query()
+            ->where('user_id', '!=', Auth::id())
+            ->where('username', 'like', '%' . $username . '%')
+            ->select([
+                'user_id',
+                'username',
+                'email',
+                'full_name',
+            ])
+            ->limit($limit)
+            ->get();
     }
 }

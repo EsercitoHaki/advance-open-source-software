@@ -6,13 +6,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class User extends Authenticatable implements JWTSubject
+class User extends Authenticatable implements JWTSubject, CanResetPasswordContract
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, \Illuminate\Auth\Passwords\CanResetPassword;
 
     /**
      * The attributes that are mass assignable.
@@ -89,5 +91,72 @@ class User extends Authenticatable implements JWTSubject
     public function checkins()
     {
         return $this->hasMany(CheckIn::class, 'user_id');
+    }
+
+    public function sendPasswordResetNotification($token)
+    {
+        // Sử dụng notification mặc định
+        $this->notify(new \Illuminate\Auth\Notifications\ResetPassword($token));
+        
+        // Hoặc sử dụng notification tùy chỉnh nếu bạn muốn frontend tự xử lý
+        // $this->notify(new \App\Notifications\ResetPasswordNotification($token));
+    }
+
+    /**
+     * Get friend requests sent by the user
+     * 
+     * @return HasMany
+     */
+    public function sentFriendRequests(): HasMany
+    {
+        return $this->hasMany(FriendRequest::class, 'sender_id', 'user_id');
+    }
+
+    /**
+     * Get friend requests received by the user
+     * 
+     * @return HasMany
+     */
+    public function receivedFriendRequests(): HasMany
+    {
+        return $this->hasMany(FriendRequest::class, 'receiver_id', 'user_id');
+    }
+
+    /**
+     * Get friendships where user is user1
+     * 
+     * @return HasMany
+     */
+    public function friendsAsUser1(): HasMany
+    {
+        return $this->hasMany(Friend::class, 'user1_id', 'user_id');
+    }
+
+    /**
+     * Get friendships where user is user2
+     * 
+     * @return HasMany
+     */
+    public function friendsAsUser2(): HasMany
+    {
+        return $this->hasMany(Friend::class, 'user2_id', 'user_id');
+    }
+
+    /**
+     * Get all friends of the user
+     * 
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function friends()
+    {
+        $friends1 = $this->friendsAsUser1()->with('user2')->get()->map(function ($friendship) {
+            return $friendship->user2;
+        });
+
+        $friends2 = $this->friendsAsUser2()->with('user1')->get()->map(function ($friendship) {
+            return $friendship->user1;
+        });
+
+        return $friends1->merge($friends2);
     }
 }

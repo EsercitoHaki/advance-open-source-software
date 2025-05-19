@@ -19,9 +19,20 @@ class DatabaseSeeder extends Seeder
         //     'full_name' => 'Test User',
         //     'email' => 'test@example.com',
         // ]);
+        
+
+        //     'name' => 'Test User',
+        //     'email' => 'test@example.com',
+        // ]);
+
+        // Gọi LessonSeeder trước, vì câu hỏi phụ thuộc vào bài học
         $this->call([
             RoleSeeder::class,
             StoreItemSeeder::class,
         ]);
+        $this->call(LessonSeeder::class);
+        $this->call(QuestionSeeder::class);
+        $this->call(OptionSeeder::class);
+        $this->call(MissionSeeder::class);
     }
 }

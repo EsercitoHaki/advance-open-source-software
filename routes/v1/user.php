@@ -11,5 +11,6 @@ Route::middleware(['jwt.auth'])->group(function () {
     Route::post('/user/change-password', [UserController::class, 'changePassword']);
     Route::post('/user/avatar', [UserController::class, 'uploadAvatar']);
     Route::get('/user/stats', [UserController::class, 'getStats']);
+    Route::get('/users', [UserController::class, 'getAllUsers']);
+    Route::get('/users/search', [UserController::class, 'searchUsers']);
 });
-
