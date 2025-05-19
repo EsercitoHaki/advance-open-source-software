@@ -13,7 +13,9 @@ class QuestionDTO implements JsonSerializable
         public ?float $score = 1.00,
         public ?string $content = null,
         public ?string $questionText = null,
-        public ?string $explanation = null
+        public ?string $explanation = null,
+        public ?string $audioFile = null,
+        public ?string $audioUrl = null
     ) {
     }
 
@@ -28,7 +30,10 @@ class QuestionDTO implements JsonSerializable
             score: $question->score,
             content: $question->content,
             questionText: $question->question_text,
-            explanation: $question->explanation
+            explanation: $question->explanation,
+            audioFile: $question->audio_file,
+            audioUrl: $question->hasAudio() ? $question->getAudioUrl() : null,
+            
         );
     }
 
@@ -43,7 +48,9 @@ class QuestionDTO implements JsonSerializable
             'score' => $this->score,
             'content' => $this->content,
             'question_text' => $this->questionText,
-            'explanation' => $this->explanation
+            'explanation' => $this->explanation,
+            'audio_file' => $this->audioFile,
+            'audio_url' => $this->audioUrl
         ];
     }
 
