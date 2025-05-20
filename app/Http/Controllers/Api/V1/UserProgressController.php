@@ -12,6 +12,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use App\Services\UserDailyMissionService;
 
 class UserProgressController extends Controller
 {
@@ -147,6 +148,8 @@ class UserProgressController extends Controller
             'elapsed_time.min' => 'Thời gian không được âm'
         ]);
 
+        
+
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
@@ -267,6 +270,8 @@ class UserProgressController extends Controller
         try {
             $userId = auth()->user()->user_id;
             $result = $this->userProgressService->finalizeLessonProgress($userId, $lessonId);
+
+            UserDailyMissionService::recordAction($userId, 'complete_lesson');
 
             return response()->json([
                 'success' => true,

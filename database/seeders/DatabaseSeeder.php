@@ -16,13 +16,23 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
         // User::factory()->create([
+        //     'full_name' => 'Test User',
+        //     'email' => 'test@example.com',
+        // ]);
+        
+
         //     'name' => 'Test User',
         //     'email' => 'test@example.com',
         // ]);
 
         // Gọi LessonSeeder trước, vì câu hỏi phụ thuộc vào bài học
+        $this->call([
+            RoleSeeder::class,
+            StoreItemSeeder::class,
+        ]);
         $this->call(LessonSeeder::class);
         $this->call(QuestionSeeder::class);
         $this->call(OptionSeeder::class);
+        $this->call(MissionSeeder::class);
     }
 }

@@ -7,6 +7,7 @@ use App\DTOs\UserDTO;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
+use App\Repositories\Interfaces\UserRepositoryInterface;
 
 class UserRepository implements UserRepositoryInterface
 {
@@ -20,8 +21,7 @@ class UserRepository implements UserRepositoryInterface
         $updateData = array_filter([
             'username' => $userDTO->username,
             'email' => $userDTO->email,
-            'first_name' => $userDTO->firstName,
-            'last_name' => $userDTO->lastName,
+            'full_name' => $userDTO->fullName,
         ], fn($value) => $value !== null);
 
         if ($updateData) {

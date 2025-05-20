@@ -30,7 +30,22 @@ use App\Repositories\FriendRequestRepository;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 use App\Repositories\UserRepository;
 use App\Services\FriendService;
-
+use App\Repositories\Interfaces\MissionRepositoryInterface;
+use App\Repositories\MissionRepository;
+use App\Services\Interfaces\MissionServiceInterface;
+use App\Services\MissionService;
+use App\Repositories\Interfaces\UserDailyMissionRepositoryInterface;
+use App\Repositories\UserDailyMissionRepository;
+use App\Services\Interfaces\UserDailyMissionServiceInterface;
+use App\Services\UserDailyMissionService;
+use App\Repositories\CommentRepository;
+use App\Repositories\Interfaces\CommentRepositoryInterface;
+use App\Services\CommentService;
+use App\Services\Interfaces\CommentServiceInterface;
+use App\Repositories\Interfaces\LeaderboardRepositoryInterface;
+use App\Repositories\LeaderboardRepository;
+use App\Services\Interfaces\LeaderboardServiceInterface;
+use App\Services\LeaderboardService;
 
 class RepositoryServiceProvider extends ServiceProvider
 {
@@ -75,14 +90,64 @@ class RepositoryServiceProvider extends ServiceProvider
         );
 
         $this->app->bind(
+            \App\Repositories\Interfaces\MissionRepositoryInterface::class,
+            \App\Repositories\MissionRepository::class
+         );
+      
+        $this->app->bind(
             \App\Repositories\Interfaces\UserRepositoryInterface::class,
             \App\Repositories\UserRepository::class
+        );
+
+        $this->app->bind(
+            \App\Repositories\Interfaces\LeaderboardRepositoryInterface::class,
+            \App\Repositories\LeaderboardRepository::class
         );
 
         // Đăng ký service bindings
         $this->app->bind(
             \App\Services\AuthServiceInterface::class,
             \App\Services\AuthService::class
+        );
+
+        $this->app->bind(
+            \App\Repositories\Interfaces\CheckInRepositoryInterface::class,
+            \App\Repositories\CheckInRepository::class
+        );
+
+        $this->app->bind(
+            \App\Services\Interfaces\CheckInServiceInterface::class,
+            \App\Services\CheckInService::class
+        );
+
+        $this->app->bind(
+            \App\Repositories\Interfaces\MascotPicRepositoryInterface::class,
+            \App\Repositories\MascotPicRepository::class
+        );
+
+        $this->app->bind(
+            \App\Services\Interfaces\MascotPicServiceInterface::class,
+            \App\Services\MascotPicService::class
+        );
+
+        $this->app->bind(
+            \App\Repositories\Interfaces\StoreItemRepositoryInterface::class,
+            \App\Repositories\StoreItemRepository::class
+        );
+
+        $this->app->bind(
+            \App\Services\Interfaces\StoreItemServiceInterface::class,
+            \App\Services\StoreItemService::class
+        );
+
+        $this->app->bind(
+            \App\Repositories\Interfaces\UserPurchaseRepositoryInterface::class,
+            \App\Repositories\UserPurchaseRepository::class
+        );
+
+        $this->app->bind(
+            \App\Services\Interfaces\UserPurchaseServiceInterface::class,
+            \App\Services\UserPurchaseService::class
         );
 
         $this->app->bind(
@@ -110,8 +175,29 @@ class RepositoryServiceProvider extends ServiceProvider
             \App\Services\StreakService::class
         );
 
+        $this->app->bind(
+            \App\Services\Interfaces\MissionServiceInterface::class,
+            \App\Services\MissionService::class
+        );
+
+        $this->app->bind(
+            \App\Services\Interfaces\LeaderboardServiceInterface::class,
+            \App\Services\LeaderboardService::class
+        );
+
+        $this->app->bind(MissionRepositoryInterface::class, MissionRepository::class);
+        $this->app->bind(MissionServiceInterface::class, MissionService::class);
+        
+        // User Daily Mission bindings
+        $this->app->bind(UserDailyMissionRepositoryInterface::class, UserDailyMissionRepository::class);
+        $this->app->bind(UserDailyMissionServiceInterface::class, UserDailyMissionService::class);
+
         // Register FriendService
         $this->app->singleton(FriendService::class);
+        
+        // Comment
+        $this->app->bind(CommentRepositoryInterface::class, CommentRepository::class);
+        $this->app->bind(CommentServiceInterface::class, CommentService::class);
     }
 
     /**
