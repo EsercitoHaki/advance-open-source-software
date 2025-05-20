@@ -75,7 +75,12 @@ class UserRepository implements UserRepositoryInterface
             'username',
             'email',
             'full_name',
-            'avatar'
+            'avatar',
+            'gender',
+            'current_streak',
+            'longest_streak',
+            'coins',
+            'created_at',
         ])->get();
     }
 
