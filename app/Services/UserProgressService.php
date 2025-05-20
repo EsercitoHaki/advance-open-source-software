@@ -9,14 +9,14 @@ use App\Models\UserProgress;
 use App\Repositories\Interfaces\QuestionRepositoryInterface;
 use App\Repositories\Interfaces\UserProgressRepositoryInterface;
 use App\Repositories\Interfaces\UserRepositoryInterface;
+use App\Services\Interfaces\StreakServiceInterface;
 use App\Services\Interfaces\UserProgressServiceInterface;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class UserProgressService implements UserProgressServiceInterface
-{
-    /**
+{    /**
      * @var UserProgressRepositoryInterface
      */
     protected $userProgressRepository;
@@ -32,20 +32,28 @@ class UserProgressService implements UserProgressServiceInterface
     protected $userRepository;
 
     /**
+     * @var StreakServiceInterface
+     */
+    protected $streakService;
+
+    /**
      * UserProgressService constructor.
      *
      * @param UserProgressRepositoryInterface $userProgressRepository
      * @param QuestionRepositoryInterface $questionRepository
      * @param UserRepositoryInterface $userRepository
+     * @param StreakServiceInterface $streakService
      */
     public function __construct(
         UserProgressRepositoryInterface $userProgressRepository,
         QuestionRepositoryInterface $questionRepository,
-        UserRepositoryInterface $userRepository
+        UserRepositoryInterface $userRepository,
+        StreakServiceInterface $streakService
     ) {
         $this->userProgressRepository = $userProgressRepository;
         $this->questionRepository = $questionRepository;
         $this->userRepository = $userRepository;
+        $this->streakService = $streakService;
     }
 
     /**
@@ -88,43 +96,84 @@ class UserProgressService implements UserProgressServiceInterface
             Log::error('Lỗi khi lấy tất cả tiến độ học tập: ' . $e->getMessage());
             throw $e;
         }
-    }
-
-    /**
-     * Bắt đầu một bài học
-     *
-     * @param string $userId
-     * @param int $lessonId
-     * @return UserProgress
-     */
+    }    /**
+         * Bắt đầu một bài học
+         *
+         * @param string $userId
+         * @param int $lessonId
+         * @return UserProgress
+         * @throws InvalidParamException
+         */
     public function startLesson(string $userId, int $lessonId): UserProgress
     {
         try {
-            return $this->userProgressRepository->startLesson($userId, $lessonId);
+            // Kiểm tra số mạng của người dùng trước khi cho phép bắt đầu bài học
+            $user = $this->userRepository->getUserById($userId);
+            if (!$user) {
+                throw new DataNotFoundException('Không tìm thấy người dùng');
+            }
+
+            $lives = $user->lives ?? 5; // Mặc định là 5 nếu không có
+            if ($lives <= 0) {
+                throw new InvalidParamException('Bạn đã hết mạng. Vui lòng đợi để mạng được phục hồi hoặc mua thêm mạng để tiếp tục học.');
+            }
+
+            // Lấy thông tin bài học
+            $lesson = DB::table('lessons')->where('lesson_id', $lessonId)->first();
+            if (!$lesson) {
+                throw new DataNotFoundException('Không tìm thấy bài học');
+            }
+
+            $progress = $this->userProgressRepository->startLesson($userId, $lessonId);
+
+            // Trả về thêm thông tin về thời gian giới hạn
+            $progress->time_limit = $lesson->time_limit ?? 600; // Mặc định 10 phút nếu không có
+
+            return $progress;
+        } catch (DataNotFoundException $e) {
+            throw $e;
+        } catch (InvalidParamException $e) {
+            throw $e;
         } catch (\Exception $e) {
             Log::error('Lỗi khi bắt đầu bài học: ' . $e->getMessage());
             throw $e;
         }
-    }
+    }    /**
+         * Tính điểm và cập nhật tiến độ học tập khi người dùng hoàn thành bài học
+         *
+         * @param string $userId
+         * @param int $lessonId
+         * @param array $userAnswers [questionId => optionId]
+         * @param int $elapsedTime Thời gian đã sử dụng (tính bằng giây)
+         * @return array Trả về kết quả bao gồm điểm số và thông tin câu trả lời
+         * @throws InvalidParamException
+         */    /**
+              * @var \App\Services\Interfaces\StreakServiceInterface
+              */
 
-    /**
-     * Tính điểm và cập nhật tiến độ học tập khi người dùng hoàn thành bài học
-     *
-     * @param string $userId
-     * @param int $lessonId
-     * @param array $userAnswers [questionId => optionId]
-     * @return array Trả về kết quả bao gồm điểm số và thông tin câu trả lời
-     * @throws InvalidParamException
-     */
-    public function completeLesson(string $userId, int $lessonId, array $userAnswers): array
+
+
+
+    public function completeLesson(string $userId, int $lessonId, array $userAnswers, int $elapsedTime = 0): array
     {
         if (empty($userAnswers)) {
             throw new InvalidParamException('Danh sách câu trả lời không được để trống');
         }
 
+        // Kiểm tra thời gian của bài học
+        $lesson = DB::table('lessons')->where('lesson_id', $lessonId)->first();
+        if (!$lesson) {
+            throw new DataNotFoundException('Không tìm thấy bài học');
+        }
+
+        $timeLimit = $lesson->time_limit ?? 600; // Mặc định 10 phút
+        if ($elapsedTime > $timeLimit) {
+            throw new InvalidParamException('Thời gian làm bài đã hết. Bài làm của bạn không được ghi nhận.');
+        }
+
         try {
             // Bắt đầu transaction để đảm bảo tính nhất quán của dữ liệu
-            return DB::transaction(function () use ($userId, $lessonId, $userAnswers) {
+            return DB::transaction(function () use ($userId, $lessonId, $userAnswers, $elapsedTime) {
                 // Lấy tất cả câu hỏi của bài học
                 $questions = $this->questionRepository->getQuestionsByLessonId($lessonId);
 
@@ -188,16 +237,18 @@ class UserProgressService implements UserProgressServiceInterface
                         'score' => $earnedScore,
                         'explanation' => $question->explanation // Luôn trả về giải thích, kể cả khi đúng
                     ];
-                }
-
-                // Cập nhật tiến độ học tập
+                }                // Cập nhật tiến độ học tập
                 $finalScore = $maxScore > 0 ? ($totalScore / $maxScore) * 100 : 0;
                 $userProgress = $this->userProgressRepository->updateProgress(
                     $userId,
                     $lessonId,
                     $finalScore,
-                    true
+                    true,
+                    $elapsedTime // Lưu lại thời gian đã sử dụng
                 );
+
+                // Update the streak when a lesson is completed
+                $streakInfo = $this->streakService->updateStreak($userId);
 
                 // Trả về kết quả
                 return [
@@ -205,7 +256,8 @@ class UserProgressService implements UserProgressServiceInterface
                     'max_score' => 100,
                     'passed' => $finalScore >= 50, // Giả định rằng điểm đậu là 70%
                     'question_results' => $results,
-                    'progress_status' => $userProgress->completion_status
+                    'progress_status' => $userProgress->completion_status,
+                    'streak_info' => $streakInfo
                 ];
             });
         } catch (DataNotFoundException $e) {
@@ -215,28 +267,44 @@ class UserProgressService implements UserProgressServiceInterface
             Log::error('Lỗi khi hoàn thành bài học: ' . $e->getMessage());
             throw $e;
         }
-    }
-
-    /**
-     * Xử lý việc nộp từng câu trả lời một và trả về phản hồi ngay lập tức
-     *
-     * @param string $userId
-     * @param int $lessonId
-     * @param int $questionId
-     * @param int $selectedOptionId
-     * @return array Trả về kết quả bao gồm thông tin câu trả lời và giải thích nếu sai
-     * @throws InvalidParamException
-     * @throws DataNotFoundException
-     */
-    public function submitSingleAnswer(string $userId, int $lessonId, int $questionId, int $selectedOptionId): array
+    }    /**
+         * Xử lý việc nộp từng câu trả lời một và trả về phản hồi ngay lập tức
+         *
+         * @param string $userId
+         * @param int $lessonId
+         * @param int $questionId
+         * @param int $selectedOptionId
+         * @param int $elapsedTime Thời gian đã sử dụng (tính bằng giây)
+         * @return array Trả về kết quả bao gồm thông tin câu trả lời và giải thích nếu sai
+         * @throws InvalidParamException
+         * @throws DataNotFoundException
+         */
+    public function submitSingleAnswer(string $userId, int $lessonId, int $questionId, int $selectedOptionId, int $elapsedTime = 0): array
     {
         try {
+            // Kiểm tra thời gian của bài học
+            $lesson = DB::table('lessons')->where('lesson_id', $lessonId)->first();
+            if (!$lesson) {
+                throw new DataNotFoundException('Không tìm thấy bài học');
+            }
+
+            $timeLimit = $lesson->time_limit ?? 600; // Mặc định 10 phút
+            if ($elapsedTime > $timeLimit) {
+                throw new InvalidParamException('Thời gian làm bài đã hết. Bài làm của bạn không được ghi nhận.');
+            }
+
+            // Cập nhật thời gian đã sử dụng cho tiến độ học tập
+            $userProgress = $this->userProgressRepository->getUserProgress($userId, $lessonId);
+            if ($userProgress) {
+                $this->userProgressRepository->updateProgress($userId, $lessonId, $userProgress->score, false, $elapsedTime);
+            }
+
             // Kiểm tra xem câu hỏi có thuộc về bài học không
             $question = $this->questionRepository->getQuestionById($questionId);
 
             if (!$question || $question->lesson_id != $lessonId) {
                 throw new InvalidParamException('Câu hỏi không hợp lệ hoặc không thuộc về bài học này');
-            }            // Kiểm tra xem đáp án có đúng không
+            }// Kiểm tra xem đáp án có đúng không
             $isCorrect = DB::table('options')
                 ->where('option_id', $selectedOptionId)
                 ->where('question_id', $questionId)

@@ -30,6 +30,7 @@ class Lesson extends Model
         'title',
         'category',
         'created_date',
+        'time_limit',
     ];
 
     /**

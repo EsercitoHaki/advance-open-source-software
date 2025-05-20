@@ -171,6 +171,11 @@ class RepositoryServiceProvider extends ServiceProvider
         );
 
         $this->app->bind(
+            \App\Services\Interfaces\StreakServiceInterface::class,
+            \App\Services\StreakService::class
+        );
+
+        $this->app->bind(
             \App\Services\Interfaces\MissionServiceInterface::class,
             \App\Services\MissionService::class
         );
