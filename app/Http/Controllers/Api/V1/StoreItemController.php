@@ -69,4 +69,34 @@ class StoreItemController extends Controller
             ], 500);
         }
     }
+
+    public function getMascots()
+    {
+        try {
+            $user = Auth::user();
+
+            if (!$user) {
+                throw new AppException('Người dùng không hợp lệ hoặc không tồn tại!');
+            }
+
+            $mascots = $this->storeItemService->getMascots($user->user_id);
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $mascots
+            ], 200);
+
+        } catch (ExpiredTokenException $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ], 401);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Đã xảy ra lỗi: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
 }

@@ -8,6 +8,7 @@ use App\Exceptions\AppException;
 use App\Services\Interfaces\StoreItemServiceInterface;
 use App\DTOs\StoreItemDTO;
 use App\Models\StoreItem;
+use App\Models\User;
 
 class StoreItemService implements StoreItemServiceInterface
 {
@@ -39,5 +40,23 @@ class StoreItemService implements StoreItemServiceInterface
             throw new AppException('Không có vật phẩm nào trong cửa hàng.');
         }
         return $items->map(fn($storeitem) => StoreItemDTO::fromModel($storeitem))->toArray();
+    }
+
+    public function getMascots(string $userId): array
+    {
+        if (!$userId) {
+            throw new AppException('Người dùng không hợp lệ hoặc không tồn tại!');
+        }
+
+        $mascots = $this->storeItemRepository->getMascots($userId); 
+
+        if ($mascots->isEmpty()) {
+            throw new AppException('Không có linh vật nào.');
+        }
+
+        return $mascots->map(fn($mascot) => [
+            'item_id' => $mascot->item_id,
+            'item_name' => $mascot->item_name,
+        ])->toArray();
     }
 }

@@ -57,6 +57,8 @@ class UserPurchaseService implements UserPurchaseServiceInterface
             ) {
                 throw new AppException('Bạn đã mua linh vật này rồi.');
             }
+            
+            $active = ($item->item_type === 'Mascot') ? true : null;
 
             $user->coins -= $item->item_price;
             $user->save();
@@ -64,6 +66,7 @@ class UserPurchaseService implements UserPurchaseServiceInterface
             $dto = new UserPurchaseDTO(
                 user_id: $user->user_id,
                 item_id: $item->item_id,
+                active: $active,
                 purchase_date: Carbon::now()->toDateTimeString()
             );
 
