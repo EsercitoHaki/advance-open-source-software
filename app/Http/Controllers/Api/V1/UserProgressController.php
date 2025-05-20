@@ -7,6 +7,7 @@ use App\Exceptions\DataNotFoundException;
 use App\Exceptions\InvalidParamException;
 use App\Http\Controllers\Controller;
 use App\Services\Interfaces\UserProgressServiceInterface;
+use App\Services\Interfaces\StreakServiceInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -18,15 +19,24 @@ class UserProgressController extends Controller
      * @var UserProgressServiceInterface
      */
     protected $userProgressService;
+    
+    /**
+     * @var StreakServiceInterface
+     */
+    protected $streakService;
 
     /**
      * Khởi tạo controller với service cần thiết
      * 
      * @param UserProgressServiceInterface $userProgressService
+     * @param StreakServiceInterface $streakService
      */
-    public function __construct(UserProgressServiceInterface $userProgressService)
-    {
+    public function __construct(
+        UserProgressServiceInterface $userProgressService,
+        StreakServiceInterface $streakService
+    ) {
         $this->userProgressService = $userProgressService;
+        $this->streakService = $streakService;
     }
 
     /**
@@ -294,6 +304,32 @@ class UserProgressController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Đã xảy ra lỗi khi lấy thống kê học tập',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+    
+    /**
+     * Test streak functionality and update user streak manually
+     *
+     * @return JsonResponse
+     */
+    public function updateStreak(): JsonResponse
+    {
+        try {
+            $userId = auth()->user()->user_id;
+            $streakInfo = $this->streakService->updateStreak($userId);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Streak updated successfully',
+                'data' => $streakInfo
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error updating streak: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while updating streak',
                 'error' => $e->getMessage()
             ], 500);
         }

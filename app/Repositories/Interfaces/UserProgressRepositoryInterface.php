@@ -31,18 +31,17 @@ interface UserProgressRepositoryInterface
      * @param int $lessonId
      * @return UserProgress
      */
-    public function startLesson(string $userId, int $lessonId): UserProgress;
-
-    /**
+    public function startLesson(string $userId, int $lessonId): UserProgress;    /**
      * Cập nhật điểm số và trạng thái hoàn thành bài học
      *
      * @param string $userId
      * @param int $lessonId
      * @param float $score
      * @param bool $completed
+     * @param int|null $elapsedTime Thời gian đã sử dụng (tính bằng giây)
      * @return UserProgress
      */
-    public function updateProgress(string $userId, int $lessonId, float $score, bool $completed = false): UserProgress;
+    public function updateProgress(string $userId, int $lessonId, float $score, bool $completed = false, ?int $elapsedTime = null): UserProgress;
 
     /**
      * Lấy thống kê học tập của người dùng (tổng số bài học, số bài hoàn thành, điểm trung bình)

@@ -9,14 +9,14 @@ use App\Models\UserProgress;
 use App\Repositories\Interfaces\QuestionRepositoryInterface;
 use App\Repositories\Interfaces\UserProgressRepositoryInterface;
 use App\Repositories\Interfaces\UserRepositoryInterface;
+use App\Services\Interfaces\StreakServiceInterface;
 use App\Services\Interfaces\UserProgressServiceInterface;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class UserProgressService implements UserProgressServiceInterface
-{
-    /**
+{    /**
      * @var UserProgressRepositoryInterface
      */
     protected $userProgressRepository;
@@ -30,22 +30,30 @@ class UserProgressService implements UserProgressServiceInterface
      * @var UserRepositoryInterface
      */
     protected $userRepository;
-
+    
+    /**
+     * @var StreakServiceInterface
+     */
+    protected $streakService;
+    
     /**
      * UserProgressService constructor.
      *
      * @param UserProgressRepositoryInterface $userProgressRepository
      * @param QuestionRepositoryInterface $questionRepository
      * @param UserRepositoryInterface $userRepository
+     * @param StreakServiceInterface $streakService
      */
     public function __construct(
         UserProgressRepositoryInterface $userProgressRepository,
         QuestionRepositoryInterface $questionRepository,
-        UserRepositoryInterface $userRepository
+        UserRepositoryInterface $userRepository,
+        StreakServiceInterface $streakService
     ) {
         $this->userProgressRepository = $userProgressRepository;
         $this->questionRepository = $questionRepository;
         $this->userRepository = $userRepository;
+        $this->streakService = $streakService;
     }
 
     /**
@@ -139,7 +147,31 @@ class UserProgressService implements UserProgressServiceInterface
          * @param int $elapsedTime Thời gian đã sử dụng (tính bằng giây)
          * @return array Trả về kết quả bao gồm điểm số và thông tin câu trả lời
          * @throws InvalidParamException
-         */
+         */    /**
+     * @var \App\Services\Interfaces\StreakServiceInterface
+     */
+    protected $streakService;
+
+    /**
+     * UserProgressService constructor.
+     *
+     * @param UserProgressRepositoryInterface $userProgressRepository
+     * @param QuestionRepositoryInterface $questionRepository
+     * @param UserRepositoryInterface $userRepository
+     * @param \App\Services\Interfaces\StreakServiceInterface $streakService
+     */
+    public function __construct(
+        UserProgressRepositoryInterface $userProgressRepository,
+        QuestionRepositoryInterface $questionRepository,
+        UserRepositoryInterface $userRepository,
+        \App\Services\Interfaces\StreakServiceInterface $streakService
+    ) {
+        $this->userProgressRepository = $userProgressRepository;
+        $this->questionRepository = $questionRepository;
+        $this->userRepository = $userRepository;
+        $this->streakService = $streakService;
+    }
+
     public function completeLesson(string $userId, int $lessonId, array $userAnswers, int $elapsedTime = 0): array
     {
         if (empty($userAnswers)) {
@@ -232,6 +264,9 @@ class UserProgressService implements UserProgressServiceInterface
                     true,
                     $elapsedTime // Lưu lại thời gian đã sử dụng
                 );
+                
+                // Update the streak when a lesson is completed
+                $streakInfo = $this->streakService->updateStreak($userId);
 
                 // Trả về kết quả
                 return [
@@ -239,7 +274,8 @@ class UserProgressService implements UserProgressServiceInterface
                     'max_score' => 100,
                     'passed' => $finalScore >= 50, // Giả định rằng điểm đậu là 70%
                     'question_results' => $results,
-                    'progress_status' => $userProgress->completion_status
+                    'progress_status' => $userProgress->completion_status,
+                    'streak_info' => $streakInfo
                 ];
             });
         } catch (DataNotFoundException $e) {
