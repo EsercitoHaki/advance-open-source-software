@@ -9,6 +9,7 @@ use App\DTOs\UserStatsDTO;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\UploadedFile;
+use App\Exceptions\DataNotFoundException;
 
 class UserService implements UserServiceInterface
 {
@@ -22,6 +23,17 @@ class UserService implements UserServiceInterface
     public function getCurrentUser(): UserDTO
     {
         return UserDTO::fromModel($this->userRepository->getCurrentUser());
+    }
+
+    public function getUserById(string $userId): UserDTO
+    {
+        $user = $this->userRepository->getUserById($userId);
+        
+        if (!$user) {
+            throw new DataNotFoundException('User not found');
+        }
+
+        return UserDTO::fromModel($user);
     }
 
     public function updateProfile(UserDTO $userDTO): UserDTO

@@ -19,8 +19,8 @@ class UpdateProfileRequest extends FormRequest
         return [
             'username' => 'string|max:50|unique:users,username,' . $user->user_id . ',user_id',
             'email' => 'email|max:100|unique:users,email,' . $user->user_id . ',user_id',
-            'first_name' => 'string|max:50|nullable',
-            'last_name' => 'string|max:50|nullable',
+            'full_name' => 'string|max:50|nullable',
+            'gender' => 'string|in:male,female,other|nullable',
         ];
     }
 
@@ -35,11 +35,8 @@ class UpdateProfileRequest extends FormRequest
             'email.max' => 'Email không được vượt quá 100 ký tự.',
             'email.unique' => 'Email đã được sử dụng.',
 
-            'first_name.string' => 'Họ phải là chuỗi.',
-            'first_name.max' => 'Họ không được vượt quá 50 ký tự.',
-
-            'last_name.string' => 'Tên phải là chuỗi.',
-            'last_name.max' => 'Tên không được vượt quá 50 ký tự.',
+            'full_name.string' => 'Họ phải là chuỗi.',
+            'full_name.max' => 'Họ không được vượt quá 50 ký tự.',
         ];
     }
 }

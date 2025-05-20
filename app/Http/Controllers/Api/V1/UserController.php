@@ -37,6 +37,23 @@ class UserController extends Controller
         }
     }
 
+    public function getUserById(string $id): JsonResponse
+    {
+        try {
+            $user = $this->userService->getUserById($id);
+
+            return response()->json([
+                'success' => true,
+                'data' => $user
+            ]);
+        } catch (DataNotFoundException $e) {
+            return response()->json([
+                'error' => true,
+                'message' => 'Không tìm thấy người dùng'
+            ], 404);
+        }
+    }
+
     public function updateProfile(UpdateProfileRequest $request): JsonResponse
     {
         try {
