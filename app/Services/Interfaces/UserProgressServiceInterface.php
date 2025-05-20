@@ -34,31 +34,30 @@ interface UserProgressServiceInterface
      * @param int $lessonId
      * @return UserProgress
      */
-    public function startLesson(string $userId, int $lessonId): UserProgress;
-
-    /**
-     * Tính điểm và cập nhật tiến độ học tập khi người dùng hoàn thành bài học
-     *
-     * @param string $userId
-     * @param int $lessonId
-     * @param array $userAnswers [questionId => optionId]
-     * @return array Trả về kết quả bao gồm điểm số và thông tin câu trả lời
-     * @throws InvalidParamException
-     */
-    public function completeLesson(string $userId, int $lessonId, array $userAnswers): array;
+    public function startLesson(string $userId, int $lessonId): UserProgress;    /**
+               * Tính điểm và cập nhật tiến độ học tập khi người dùng hoàn thành bài học
+               *
+               * @param string $userId
+               * @param int $lessonId
+               * @param array $userAnswers [questionId => optionId]
+               * @param int $elapsedTime Thời gian đã sử dụng (tính bằng giây)
+               * @return array Trả về kết quả bao gồm điểm số và thông tin câu trả lời
+               * @throws InvalidParamException
+               */
+    public function completeLesson(string $userId, int $lessonId, array $userAnswers, int $elapsedTime = 0): array;
 
     /**
      * Xử lý việc nộp từng câu trả lời một và trả về phản hồi ngay lập tức
-     *
-     * @param string $userId
+     *     * @param string $userId
      * @param int $lessonId
      * @param int $questionId
      * @param int $selectedOptionId
+     * @param int $elapsedTime Thời gian đã sử dụng (tính bằng giây)
      * @return array Trả về kết quả bao gồm thông tin câu trả lời và giải thích nếu sai
      * @throws InvalidParamException
      * @throws DataNotFoundException
      */
-    public function submitSingleAnswer(string $userId, int $lessonId, int $questionId, int $selectedOptionId): array;
+    public function submitSingleAnswer(string $userId, int $lessonId, int $questionId, int $selectedOptionId, int $elapsedTime = 0): array;
 
     /**
      * Hoàn thành bài học sau khi đã trả lời các câu hỏi một cách riêng lẻ

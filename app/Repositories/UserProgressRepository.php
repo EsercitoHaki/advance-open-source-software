@@ -57,15 +57,13 @@ class UserProgressRepository extends BaseRepository implements UserProgressRepos
             Log::error('Lỗi khi lấy tất cả tiến độ học tập: ' . $e->getMessage());
             throw $e;
         }
-    }
-
-    /**
-     * Bắt đầu một bài học (ghi nhận thời gian bắt đầu)
-     *
-     * @param string $userId
-     * @param int $lessonId
-     * @return UserProgress
-     */
+    }    /**
+         * Bắt đầu một bài học (ghi nhận thời gian bắt đầu)
+         *
+         * @param string $userId
+         * @param int $lessonId
+         * @return UserProgress
+         */
     public function startLesson(string $userId, int $lessonId): UserProgress
     {
         try {
@@ -80,12 +78,20 @@ class UserProgressRepository extends BaseRepository implements UserProgressRepos
                     'lesson_id' => $lessonId,
                     'completion_status' => 'In Progress',
                     'start_date' => $now,
-                    'score' => 0
+                    'score' => 0,
+                    'elapsed_time' => 0 // Khởi tạo thời gian đã sử dụng
                 ]);
             } elseif ($progress->completion_status === 'Not Started') {
                 $progress->update([
                     'completion_status' => 'In Progress',
-                    'start_date' => $now
+                    'start_date' => $now,
+                    'elapsed_time' => 0 // Reset thời gian đã sử dụng
+                ]);
+            } elseif ($progress->completion_status === 'In Progress') {
+                // Reset thời gian nếu làm lại bài
+                $progress->update([
+                    'start_date' => $now,
+                    'elapsed_time' => 0
                 ]);
             }
 
@@ -96,18 +102,17 @@ class UserProgressRepository extends BaseRepository implements UserProgressRepos
             Log::error('Lỗi khi bắt đầu bài học: ' . $e->getMessage());
             throw $e;
         }
-    }
-
-    /**
-     * Cập nhật điểm số và trạng thái hoàn thành bài học
-     *
-     * @param string $userId
-     * @param int $lessonId
-     * @param float $score
-     * @param bool $completed
-     * @return UserProgress
-     */
-    public function updateProgress(string $userId, int $lessonId, float $score, bool $completed = false): UserProgress
+    }    /**
+         * Cập nhật điểm số và trạng thái hoàn thành bài học
+         *
+         * @param string $userId
+         * @param int $lessonId
+         * @param float $score
+         * @param bool $completed
+         * @param int|null $elapsedTime Thời gian đã sử dụng (tính bằng giây)
+         * @return UserProgress
+         */
+    public function updateProgress(string $userId, int $lessonId, float $score, bool $completed = false, ?int $elapsedTime = null): UserProgress
     {
         try {
             DB::beginTransaction();
@@ -118,6 +123,11 @@ class UserProgressRepository extends BaseRepository implements UserProgressRepos
             $data = [
                 'score' => $score
             ];
+
+            // Cập nhật thời gian đã sử dụng nếu được cung cấp
+            if ($elapsedTime !== null) {
+                $data['elapsed_time'] = $elapsedTime;
+            }
 
             if ($completed) {
                 $data['completion_status'] = 'Completed';

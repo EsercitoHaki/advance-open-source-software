@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id('purchase_id');
             $table->char('user_id', 36);
             $table->unsignedBigInteger('item_id');
+            $table->boolean('active')->nullable()->default(null);
             $table->timestamp('purchase_date')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->foreign('user_id')->references('user_id')->on('users')->onDelete('cascade');
             $table->foreign('item_id')->references('item_id')->on('store_items')->onDelete('cascade');

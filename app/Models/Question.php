@@ -64,27 +64,33 @@ class Question extends Model
     {
         return $this->belongsTo(Lesson::class, 'lesson_id', 'lesson_id');
     }
-/**
- * Kiểm tra xem câu hỏi có file âm thanh không
- *
- * @return bool
- */
-public function hasAudio(): bool
-{
-    return !empty($this->audio_file);
-}
-
-/**
- * Lấy đường dẫn đầy đủ tới file âm thanh
- *
- * @return string|null
- */
-public function getAudioUrl(): ?string
-{
-    if (!$this->hasAudio()) {
-        return null;
+    /**
+     * Kiểm tra xem câu hỏi có file âm thanh không
+     *
+     * @return bool
+     */
+    public function hasAudio(): bool
+    {
+        return !empty($this->audio_file);
     }
-    
-    return url('storage/audios/' . $this->audio_file);
-}
+
+    /**
+     * Lấy đường dẫn đầy đủ tới file âm thanh
+     *
+     * @return string|null
+     */
+    public function getAudioUrl(): ?string
+    {
+        if (!$this->hasAudio()) {
+            return null;
+        }
+
+        // Cung cấp nhiều tùy chọn URL để khách hàng có thể sử dụng
+        $streamUrl = url('/api/v1/audio/file/' . $this->audio_file);
+        $directUrl = url('/storage/audios/' . $this->audio_file);
+        $webUrl = url('/audio/' . $this->audio_file);
+
+        // Mặc định sử dụng API phát trực tiếp
+        return $streamUrl;
+    }
 }

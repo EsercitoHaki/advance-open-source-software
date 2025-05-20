@@ -16,8 +16,8 @@ return new class extends Migration
             $table->string('item_name', 100); 
             $table->enum('item_type', ['Lives', 'Mascot']); 
             $table->integer('item_price'); 
-            $table->string('mascot_pic', 255)->nullable(); 
             $table->integer('lives_amount')->nullable(); 
+            $table->boolean('is_active')->default(true);
         });
     }
 

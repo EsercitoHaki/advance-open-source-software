@@ -13,3 +13,4 @@ Route::prefix($version)->group(function () use ($version) {
         require $file;
     }
 });
+
