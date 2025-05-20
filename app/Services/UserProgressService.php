@@ -30,12 +30,12 @@ class UserProgressService implements UserProgressServiceInterface
      * @var UserRepositoryInterface
      */
     protected $userRepository;
-    
+
     /**
      * @var StreakServiceInterface
      */
     protected $streakService;
-    
+
     /**
      * UserProgressService constructor.
      *
@@ -148,29 +148,11 @@ class UserProgressService implements UserProgressServiceInterface
          * @return array Trả về kết quả bao gồm điểm số và thông tin câu trả lời
          * @throws InvalidParamException
          */    /**
-     * @var \App\Services\Interfaces\StreakServiceInterface
-     */
-    protected $streakService;
+              * @var \App\Services\Interfaces\StreakServiceInterface
+              */
 
-    /**
-     * UserProgressService constructor.
-     *
-     * @param UserProgressRepositoryInterface $userProgressRepository
-     * @param QuestionRepositoryInterface $questionRepository
-     * @param UserRepositoryInterface $userRepository
-     * @param \App\Services\Interfaces\StreakServiceInterface $streakService
-     */
-    public function __construct(
-        UserProgressRepositoryInterface $userProgressRepository,
-        QuestionRepositoryInterface $questionRepository,
-        UserRepositoryInterface $userRepository,
-        \App\Services\Interfaces\StreakServiceInterface $streakService
-    ) {
-        $this->userProgressRepository = $userProgressRepository;
-        $this->questionRepository = $questionRepository;
-        $this->userRepository = $userRepository;
-        $this->streakService = $streakService;
-    }
+
+
 
     public function completeLesson(string $userId, int $lessonId, array $userAnswers, int $elapsedTime = 0): array
     {
@@ -191,7 +173,7 @@ class UserProgressService implements UserProgressServiceInterface
 
         try {
             // Bắt đầu transaction để đảm bảo tính nhất quán của dữ liệu
-            return DB::transaction(function () use ($userId, $lessonId, $userAnswers) {
+            return DB::transaction(function () use ($userId, $lessonId, $userAnswers, $elapsedTime) {
                 // Lấy tất cả câu hỏi của bài học
                 $questions = $this->questionRepository->getQuestionsByLessonId($lessonId);
 
@@ -264,7 +246,7 @@ class UserProgressService implements UserProgressServiceInterface
                     true,
                     $elapsedTime // Lưu lại thời gian đã sử dụng
                 );
-                
+
                 // Update the streak when a lesson is completed
                 $streakInfo = $this->streakService->updateStreak($userId);
 

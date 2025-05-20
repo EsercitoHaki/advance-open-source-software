@@ -7,7 +7,6 @@ use App\Repositories\Interfaces\UserRepositoryInterface;
 use App\Services\Interfaces\StreakServiceInterface;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class StreakService implements StreakServiceInterface
@@ -29,10 +28,10 @@ class StreakService implements StreakServiceInterface
     }
 
     /**
-     * Update user streak when a lesson is completed
+     * Cập nhật streak cho người dùng khi hoàn thành bài học
      *
      * @param string $userId
-     * @return array Information about the streak update
+     * @return array Thông tin về việc cập nhật streak
      */
     public function updateStreak(string $userId): array
     {
@@ -40,21 +39,21 @@ class StreakService implements StreakServiceInterface
             // Get user information
             $user = $this->userRepository->getUserById($userId);
             if (!$user) {
-                throw new \Exception('User not found');
+                throw new \Exception('Không tìm thấy người dùng');
             }
 
-            // Use today's date as the key for checking if a lesson was completed today
+            // Kiểm tra xem người dùng đã hoàn thành bài học hôm nay chưa
             $today = Carbon::now()->format('Y-m-d');
             $lastLessonDateKey = "user_{$userId}_last_lesson_date";
             $lastLessonDate = Cache::get($lastLessonDateKey);
 
-            // Get the current streak values
+            // Nếu không có thông tin về ngày hoàn thành bài học, lấy từ cơ sở dữ liệu
             $currentStreak = $user->current_streak;
             $longestStreak = $user->longest_streak;
             $streakUpdated = false;
             $streakMessage = '';
 
-            // If the user has already completed a lesson today, no need to update streak
+            // Nếu người dùng đã hoàn thành bài học hôm nay, không cần cập nhật streak
             if ($lastLessonDate === $today) {
                 return [
                     'current_streak' => $currentStreak,
@@ -64,33 +63,35 @@ class StreakService implements StreakServiceInterface
                 ];
             }
 
-            // Check if the last lesson was completed yesterday to continue streak
+            // Kiêm tra xem người dùng đã hoàn thành bài học hôm qua chưa
+            // Nếu có, kiểm tra xem có tiếp tục streak không
             if ($lastLessonDate) {
                 $yesterday = Carbon::now()->subDay()->format('Y-m-d');
                 if ($lastLessonDate === $yesterday) {
                     // Continue streak
                     $currentStreak++;
                     $streakUpdated = true;
-                    $streakMessage = 'Streak continued! You\'ve maintained your streak for ' . $currentStreak . ' days!';
+                    $streakMessage = 'Tuyệt vời! Bạn đã giữ được streak liên tục trong ' . $currentStreak . ' ngày!';
                 } else {
-                    // Streak broken - reset to 1
-                    $currentStreak = 1;
+                    // Reset streak
+                    $currentStreak = 0;// về 0 ok chưa
                     $streakUpdated = true;
-                    $streakMessage = 'New streak started! Complete lessons daily to maintain your streak!';
+                    $streakMessage = 'Streak của bạn đã bị reset vì bạn không hoàn thành bài học hôm qua. Hãy cố gắng hơn nhé!';
                 }
             } else {
-                // First time completion - start streak at 1
-                $currentStreak = 1;
+                // Và với người dùng mới
+// Lần đầu hoàn thành bài học
+                $currentStreak = 1;  // Không phải 0, vì họ đã hoàn thành bài học hôm nay
                 $streakUpdated = true;
-                $streakMessage = 'Streak started! Complete lessons daily to maintain your streak!';
+                $streakMessage = 'Bạn đã bắt đầu một streak mới! Học mỗi ngày để duy trì chuỗi ngày thành tích nhé!';
             }
 
-            // Update longest streak if current streak is higher
+            // Cập nhật longest streak nếu current streak lớn hơn
             if ($currentStreak > $longestStreak) {
                 $longestStreak = $currentStreak;
             }
 
-            // Save the updated streak values
+            // Lưu thông tin streak vào cơ sở dữ liệu
             if ($streakUpdated) {
                 $this->userRepository->updateStats($user, [
                     'current_streak' => $currentStreak,
@@ -98,7 +99,7 @@ class StreakService implements StreakServiceInterface
                 ]);
             }
 
-            // Update last lesson completion date
+            // Cập nhật thông tin ngày hoàn thành bài học vào cache
             Cache::put($lastLessonDateKey, $today, Carbon::now()->endOfDay()->diffInSeconds(Carbon::now()));
 
             return [
@@ -114,8 +115,9 @@ class StreakService implements StreakServiceInterface
     }
 
     /**
-     * Check and reset streaks for users who haven't completed lessons
-     * This method should be called by a scheduled job daily
+     * Kiểm tra và reset streak cho người dùng
+     * Mỗi ngày chạy một lần để kiểm tra xem người dùng có hoàn thành bài học hôm qua không
+     * Nếu không, reset current_streak về 0
      */
     public function checkAndResetStreaks(): void
     {
@@ -127,11 +129,11 @@ class StreakService implements StreakServiceInterface
             foreach ($users as $user) {
                 $lastLessonDateKey = "user_{$user->user_id}_last_lesson_date";
                 $lastLessonDate = Cache::get($lastLessonDateKey);
-                
+
                 // If no last lesson date found or it's not yesterday, reset streak
                 if (!$lastLessonDate || Carbon::parse($lastLessonDate)->diffInDays(Carbon::now()) > 1) {
                     // Reset current streak to 0
-                    $this->userRepository->updateStats($user, ['current_streak' => 0]);
+                    $this->userRepository->updateStats($user, ['current_streak' => 0]);// tự động reset
                     $resetCount++;
                 }
             }

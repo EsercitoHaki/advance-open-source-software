@@ -104,7 +104,7 @@ class RepositoryServiceProvider extends ServiceProvider
             \App\Services\Interfaces\UserProgressServiceInterface::class,
             \App\Services\UserProgressService::class
         );
-        
+
         $this->app->bind(
             \App\Services\Interfaces\StreakServiceInterface::class,
             \App\Services\StreakService::class

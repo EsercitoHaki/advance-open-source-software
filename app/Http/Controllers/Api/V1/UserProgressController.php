@@ -19,7 +19,7 @@ class UserProgressController extends Controller
      * @var UserProgressServiceInterface
      */
     protected $userProgressService;
-    
+
     /**
      * @var StreakServiceInterface
      */
@@ -308,7 +308,7 @@ class UserProgressController extends Controller
             ], 500);
         }
     }
-    
+
     /**
      * Test streak functionality and update user streak manually
      *
@@ -319,7 +319,7 @@ class UserProgressController extends Controller
         try {
             $userId = auth()->user()->user_id;
             $streakInfo = $this->streakService->updateStreak($userId);
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Streak updated successfully',

@@ -17,11 +17,11 @@ class Kernel extends ConsoleKernel
             app(\App\Services\Interfaces\StreakServiceInterface::class)->checkAndResetStreaks();
         })->dailyAt('23:59');
     }    /**
-     * Register the commands for the application.
-     */
+         * Register the commands for the application.
+         */
     protected function commands(): void
     {
-        $this->load(__DIR__.'/Commands');
+        $this->load(__DIR__ . '/Commands');
 
         require base_path('routes/console.php');
     }

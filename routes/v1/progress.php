@@ -23,8 +23,8 @@ Route::middleware(['jwt.auth'])->group(function () {
         // Hoàn thành bài học sau khi đã nộp tất cả câu trả lời
         Route::post('/lesson/{lessonId}/finalize', [UserProgressController::class, 'finalizeLessonProgress']);        // Lấy thống kê học tập
         Route::get('/stats', [UserProgressController::class, 'getLearningStats']);
-        
-        // Test streak functionality
+
+        // Test streak 1 cách thủ công
         Route::post('/update-streak', [UserProgressController::class, 'updateStreak']);
     });
 });

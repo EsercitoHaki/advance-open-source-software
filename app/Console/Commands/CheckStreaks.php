@@ -45,7 +45,7 @@ class CheckStreaks extends Command
     public function handle(): void
     {
         $this->info('Checking streaks...');
-        
+
         try {
             $this->streakService->checkAndResetStreaks();
             $this->info('Streak check completed successfully!');
