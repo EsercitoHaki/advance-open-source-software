@@ -7,7 +7,7 @@ use App\DTOs\UserDTO;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
-use App\Repositories\Interfaces\UserRepositoryInterface;
+use Illuminate\Support\Facades\DB;
 
 class UserRepository implements UserRepositoryInterface
 {
@@ -101,4 +101,22 @@ class UserRepository implements UserRepositoryInterface
             ->limit($limit)
             ->get();
     }
+
+    public function getUsersWithTotalScore()
+    {
+        return User::select('users.user_id', 'users.username', 'users.avatar', DB::raw('COALESCE(SUM(user_progress.score), 0) as total_score'))
+            ->leftJoin('user_progress', 'users.user_id', '=', 'user_progress.user_id')
+            ->groupBy('users.user_id', 'users.username', 'users.avatar')
+            ->get();
+    }
+
+    public function findUserWithScore(string $userId)
+    {
+        return User::select('users.user_id', 'users.username', 'users.avatar', DB::raw('COALESCE(SUM(user_progress.score), 0) as total_score'))
+            ->leftJoin('user_progress', 'users.user_id', '=', 'user_progress.user_id')
+            ->where('users.user_id', $userId)
+            ->groupBy('users.user_id', 'users.username', 'users.avatar')
+            ->first();
+    }
+
 }

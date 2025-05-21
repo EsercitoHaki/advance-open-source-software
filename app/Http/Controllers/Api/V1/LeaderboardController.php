@@ -9,52 +9,39 @@ use Illuminate\Http\JsonResponse;
 
 class LeaderboardController extends Controller
 {
-    public function __construct(
-        private LeaderboardServiceInterface $leaderboardService
-    ) {}
-
+    protected $leaderboardService;
+    
+    public function __construct(LeaderboardServiceInterface $leaderboardService)
+    {
+        $this->leaderboardService = $leaderboardService;
+    }
+    
     public function index(Request $request): JsonResponse
     {
-        $limit = $request->input('limit', 10);
-        $page = $request->input('page', 1);
+        $limit = $request->input('limit', 100);
         
-        $leaderboardResponse = $this->leaderboardService->getLeaderboard($limit, $page);
+        $leaderboard = $this->leaderboardService->getLeaderboard($limit);
         
         return response()->json([
-            'status' => 'success',
-            'data' => $leaderboardResponse->toArray(),
-            'meta' => [
-                'page' => (int)$page,
-                'limit' => (int)$limit,
-                'total' => $leaderboardResponse->totalUsers
-            ]
+            'success' => true,
+            'data' => $leaderboard
         ]);
     }
-
-    public function getCurrentUserRank(): JsonResponse
+    
+    public function getUserRank(): JsonResponse
     {
-        if (!auth()->check()) {
+        $userRank = $this->leaderboardService->getUserRank();
+
+        if ($userRank === null) {
             return response()->json([
-                'status' => 'error',
-                'message' => 'Người dùng chưa đăng nhập'
-            ], 401);
-        }
-        
-        $userId = auth()->id();
-        $position = $this->leaderboardService->getUserLeaderboardPosition($userId);
-        
-        if ($position === null) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Không tìm thấy thứ hạng của người dùng'
+                'success' => false,
+                'message' => 'User not found'
             ], 404);
         }
-        
+
         return response()->json([
-            'status' => 'success',
-            'data' => [
-                'position' => $position
-            ]
+            'success' => true,
+            'data' => $userRank
         ]);
     }
 }
