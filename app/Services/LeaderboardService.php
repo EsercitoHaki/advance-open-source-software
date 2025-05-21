@@ -28,7 +28,7 @@ class LeaderboardService implements LeaderboardServiceInterface
             ->take($limit)
             ->map(function ($user, $index) {
                 return [
-                    'rank' => $this->getRankByScore($user->total_score), // ✅ Đã thay đổi ở đây
+                    'rank' => $this->getRankByScore($user->total_score),
                     'position' => $index + 1,
                     'username' => $user->username,
                     'avatar' => $user->avatar,
