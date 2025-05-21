@@ -45,4 +45,6 @@ interface LessonRepositoryInterface
      * @return int
      */
     public function countLessonsByCategory(string $category): int;
+    public function updateLesson(string $lessonId, array $lessonData): ?Lesson;
+    public function deleteLesson(string $lessonId): bool;
 }

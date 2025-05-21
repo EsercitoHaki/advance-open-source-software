@@ -22,7 +22,7 @@ class AdminUserSeeder extends Seeder
                 'registration_date' => now(),
                 'full_name' => 'Quản Trị Viên',
                 'gender' => 'other',
-                'avatar' => 'default-avatar.png',
+                'avatar' => 'admin.png',
                 'coins' => 0,
                 'lives' => 5,
                 'current_streak' => 0,

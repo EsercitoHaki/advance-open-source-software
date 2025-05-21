@@ -104,4 +104,46 @@ class LessonRepository implements LessonRepositoryInterface
             throw $e;
         }
     }
+
+    public function updateLesson(string $lessonId, array $lessonData): ?Lesson
+    {
+        try {
+            DB::beginTransaction();
+            $lesson = Lesson::find($lessonId);
+            
+            if ($lesson) {
+                $lesson->update($lessonData);
+                DB::commit();
+                return $lesson;
+            }
+            
+            DB::rollBack();
+            return null;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Lỗi khi cập nhật bài học: ' . $e->getMessage());
+            throw $e;
+        }
+    }
+
+    public function deleteLesson(string $lessonId): bool
+    {
+        try {
+            DB::beginTransaction();
+            $lesson = Lesson::find($lessonId);
+            
+            if ($lesson) {
+                $lesson->delete();
+                DB::commit();
+                return true;
+            }
+            
+            DB::rollBack();
+            return false;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Lỗi khi xóa bài học: ' . $e->getMessage());
+            throw $e;
+        }
+    }
 }

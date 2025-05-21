@@ -147,7 +147,6 @@ class UserProgressController extends Controller
             'elapsed_time.integer' => 'Thời gian phải là số nguyên',
             'elapsed_time.min' => 'Thời gian không được âm'
         ]);
-
         
 
         if ($validator->fails()) {

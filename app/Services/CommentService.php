@@ -30,6 +30,7 @@ class CommentService implements CommentServiceInterface
         return [
             'id' => $comment->comment_id,
             'name' => $comment->user->full_name ?? 'Unknown User',
+            'username' => $comment->user->username ?? 'Unknown',
             'avatar' => $comment->user->avatar ?? 'default-avatar.png',
             'content' => $comment->content,
             'time' => $comment->created_date ? $comment->created_date->diffForHumans() : '',
