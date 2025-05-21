@@ -11,13 +11,15 @@ class UserDTO
         public ?string $username,
         public ?string $email,
         public ?string $fullName,
+        public ?string $gender,
         public ?string $avatar = null,
         public ?int $roleId = null,
         public ?int $coins = null,
         public ?int $lives = null,
         public ?int $currentStreak = null,
         public ?int $longestStreak = null,
-        public ?bool $isActive = null
+        public ?bool $isActive = null,
+        public ?string $createdAt = null,
     ){}
 
     /**
@@ -33,6 +35,7 @@ class UserDTO
             username: $request->get('username'),
             email: $request->get('email'),
             fullName: $request->get('full_name'),
+            gender: $request->get('gender'),
         );
     }
 
@@ -49,13 +52,15 @@ class UserDTO
             username: $user->username,
             email: $user->email,
             fullName: $user->full_name,
+            gender: $user->gender,
             avatar: $user->avatar,
             roleId: $user->role_id,
             coins: $user->coins,
             lives: $user->lives,
             currentStreak: $user->current_streak,
             longestStreak: $user->longest_streak,
-            isActive: $user->is_active
+            isActive: $user->is_active,
+            createdAt: $user->created_at,
         );
     }
 
@@ -78,6 +83,7 @@ class UserDTO
             'current_streak' => $this->currentStreak,
             'longest_streak' => $this->longestStreak,
             'is_active' => $this->isActive,
+            'created_at' => $this->createdAt,
         ];
     }
 }

@@ -22,6 +22,7 @@ class UserRepository implements UserRepositoryInterface
             'username' => $userDTO->username,
             'email' => $userDTO->email,
             'full_name' => $userDTO->fullName,
+            'gender' => $userDTO->gender,
         ], fn($value) => $value !== null);
 
         if ($updateData) {

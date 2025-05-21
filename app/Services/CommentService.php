@@ -29,7 +29,8 @@ class CommentService implements CommentServiceInterface
     {
         return [
             'id' => $comment->comment_id,
-            'name' => $comment->user->full_name ?? 'Unknown User', 
+            'name' => $comment->user->full_name ?? 'Unknown User',
+            'avatar' => $comment->user->avatar ?? 'default-avatar.png',
             'content' => $comment->content,
             'time' => $comment->created_date ? $comment->created_date->diffForHumans() : '',
             'replies' => $this->getNestedReplies($comment),

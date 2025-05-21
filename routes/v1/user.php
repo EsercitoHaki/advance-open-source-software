@@ -7,6 +7,7 @@ use App\Http\Middleware\JwtMiddleware;
 
 Route::middleware(['jwt.auth'])->group(function () {
     Route::get('/user/profile', [UserController::class, 'profile']);
+    Route::get('/users/{id}', [UserController::class, 'getUserById']);
     Route::put('/user/profile', [UserController::class, 'updateProfile']);
     Route::post('/user/change-password', [UserController::class, 'changePassword']);
     Route::post('/user/avatar', [UserController::class, 'uploadAvatar']);

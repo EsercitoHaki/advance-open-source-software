@@ -7,7 +7,8 @@ class AuthDTO {
         public readonly string $email,
         public readonly string $password,
         public readonly ?string $username = null,
-        public readonly ?string $full_name = null
+        public readonly ?string $full_name = null,
+        public readonly ?string $gender,
     ) {}
 
     public static function formArray(array $data): self {
@@ -16,6 +17,7 @@ class AuthDTO {
             password: $data['password'],
             username: $data['username'] ?? null,
             full_name: $data['full_name'] ?? null,
+            gender: $data['gender'] ?? null,
         );
     }
 
@@ -25,6 +27,7 @@ class AuthDTO {
             'password' => $this->password,
             'username' => $this->username,
             'full_name' => $this->full_name,
+            'gender' => $this->gender,
         ];
     }
 }
