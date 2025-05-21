@@ -8,6 +8,6 @@ Route::middleware(['jwt.auth'])->group(function () {
         Route::get('/comments', [CommentController::class, 'getCommentsByLesson']);
         Route::post('/comments', [CommentController::class, 'store']);
         Route::put('/comments/{id}', [CommentController::class, 'update']);
-        Route::delete('/comments/{id}', [CommentController::class, 'destroy']);
+        Route::delete('/comments/{commentId}', [CommentController::class, 'destroy']);
     });
 });

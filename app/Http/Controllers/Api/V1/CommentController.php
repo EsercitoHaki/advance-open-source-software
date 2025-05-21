@@ -75,17 +75,18 @@ class CommentController extends Controller
         }
     }
 
-    public function destroy(int $id): JsonResponse
+    public function destroy(int $lessonId, int $commentId): JsonResponse
     {
-        $comment = $this->commentService->find($id);
-        if (!$comment || $comment->user_id !== Auth::id()) {
-            return response()->json(['message' => 'Không tìm thấy bình luận hoặc bạn không có quyền xóa.'], 404);
+
+
+        $deleted = $this->commentService->deleteComment($commentId);
+
+        if ($deleted) {
+            return response()->json(['message' => 'Comment deleted successfully'], 200);
         }
 
-        if ($this->commentService->deleteComment($id)) {
-            return response()->json(['message' => 'Bình luận đã được xóa.']);
-        } else {
-            return response()->json(['message' => 'Không thể xóa bình luận.'], 500);
-        }
+        return response()->json(['message' => 'Failed to delete comment'], 500);
     }
+
+
 }

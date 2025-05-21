@@ -11,6 +11,6 @@ interface CommentRepositoryInterface
     public function getRepliesByParentId(int $parentId): Collection;
     public function create(array $data): Comment;
     public function find(int $id): ?Comment;
-    public function update(int $id, array $data): ?Comment;
-    public function delete(int $id): bool;
+    public function update(int $commentId, array $data): ?Comment;
+    public function delete(int $commentId): bool;
 }
