@@ -44,4 +44,26 @@ class LeaderboardController extends Controller
             'data' => $userRank
         ]);
     }
+
+    public function getFriendsLeaderboard(): JsonResponse
+    {
+        $friendsLeaderboard = $this->leaderboardService->getFriendsLeaderboard();
+        
+        return response()->json([
+            'success' => true,
+            'data' => $friendsLeaderboard,
+            'message' => 'Friends leaderboard retrieved successfully'
+        ]);
+    }
+
+    public function compareFriendsRank(): JsonResponse
+    {
+        $comparison = $this->leaderboardService->compareFriendsRank();
+        
+        return response()->json([
+            'success' => true,
+            'data' => $comparison,
+            'message' => 'Friends rank comparison retrieved successfully'
+        ]);
+    }
 }

@@ -77,6 +77,73 @@ class LeaderboardService implements LeaderboardServiceInterface
         };
     }
 
+    public function getFriendsLeaderboard(): array
+    {
+        $authUserId = Auth::id();
+        
+        if (!$authUserId) {
+            return [];
+        }
+
+        $friendIds = $this->userRepository->getFriendIds($authUserId);
+        
+        if (empty($friendIds)) {
+            return [];
+        }
+
+        $friendsWithScore = $this->userRepository->getUsersWithScoreByIds($friendIds);
+        
+        $friendsLeaderboard = $friendsWithScore
+            ->sortByDesc('total_score')
+            ->values()
+            ->map(function ($friend, $index) {
+                return [
+                    'rank' => $this->getRankByScore($friend->total_score),
+                    'position' => $index + 1,
+                    'user_id' => $friend->user_id,
+                    'username' => $friend->username,
+                    'avatar' => $friend->avatar,
+                    'total_score' => $friend->total_score,
+                ];
+            });
+
+        return $friendsLeaderboard->toArray();
+    }
+
+    public function compareFriendsRank(): array
+    {
+        $authUserId = Auth::id();
+        
+        if (!$authUserId) {
+            return [];
+        }
+
+        $currentUserRank = $this->getUserRank();
+        
+        $friendsRanks = $this->getFriendsLeaderboard();
+        
+        $allUsersForComparison = $friendsRanks;
+        
+        if ($currentUserRank) {
+            $allUsersForComparison[] = array_merge($currentUserRank, [
+                'user_id' => $authUserId,
+                'is_current_user' => true
+            ]);
+        }
+
+        $sortedComparison = collect($allUsersForComparison)
+            ->sortByDesc('total_score')
+            ->values()
+            ->map(function ($user, $index) {
+                return array_merge($user, [
+                    'position' => $index + 1,
+                    'is_current_user' => $user['is_current_user'] ?? false
+                ]);
+            });
+
+        return $sortedComparison->toArray();
+    }
+
     // protected function getRankByPercentile(int $position, int $total): string
     // {
     //     $percentile = $position / $total;

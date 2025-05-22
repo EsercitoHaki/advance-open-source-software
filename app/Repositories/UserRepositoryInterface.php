@@ -18,4 +18,8 @@ interface UserRepositoryInterface
     public function updateStats(User $user, array $stats): User;
 
     public function getUserById(string $userId): ?User;
+
+    public function getFriendIds(string $userId): array;
+    
+    public function getUsersWithScoreByIds(array $userIds): Collection;
 }

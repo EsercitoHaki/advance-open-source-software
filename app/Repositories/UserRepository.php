@@ -119,4 +119,34 @@ class UserRepository implements UserRepositoryInterface
             ->first();
     }
 
+    public function getFriendIds(string $userId): array
+    {
+        $friends = DB::table('friends')
+            ->where(function ($query) use ($userId) {
+                $query->where('user1_id', $userId)
+                      ->orWhere('user2_id', $userId);
+            })
+            ->get();
+
+        $friendIds = [];
+        foreach ($friends as $friend) {
+            if ($friend->user1_id === $userId) {
+                $friendIds[] = $friend->user2_id;
+            } else {
+                $friendIds[] = $friend->user1_id;
+            }
+        }
+
+        return $friendIds;
+    }
+
+    public function getUsersWithScoreByIds(array $userIds): Collection
+    {
+        return User::select('users.user_id', 'users.username', 'users.avatar', 
+                           DB::raw('COALESCE(SUM(user_progress.score), 0) as total_score'))
+            ->leftJoin('user_progress', 'users.user_id', '=', 'user_progress.user_id')
+            ->whereIn('users.user_id', $userIds)
+            ->groupBy('users.user_id', 'users.username', 'users.avatar')
+            ->get();
+    }
 }
