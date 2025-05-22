@@ -9,6 +9,7 @@ use App\Services\Interfaces\OptionServiceInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Exceptions\DataNotFoundException;
+use Illuminate\Support\Facades\Log;
 
 class QuestionController extends Controller
 {
@@ -220,6 +221,17 @@ class QuestionController extends Controller
                 'error' => true,
                 'message' => $e->getMessage(),
             ], 404);
+        } catch (\Exception $e) {
+            // Log lỗi khi xảy ra exception
+            Log::error('Error in getLessonWithQuestions: ' . $e->getMessage(), [
+                'lessonId' => $lessonId,
+                'exception' => $e
+            ]);
+
+            return response()->json([
+                'error' => true,
+                'message' => 'Đã xảy ra lỗi khi lấy dữ liệu bài học và câu hỏi.',
+            ], 500);
         }
     }
 }

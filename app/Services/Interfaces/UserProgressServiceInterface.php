@@ -64,10 +64,11 @@ interface UserProgressServiceInterface
      *
      * @param string $userId
      * @param int $lessonId
+     * @param int $elapsedTime Thời gian đã sử dụng (tính bằng giây)
      * @return array Trả về kết quả tổng hợp của bài học
      * @throws InvalidParamException
      */
-    public function finalizeLessonProgress(string $userId, int $lessonId): array;
+    public function finalizeLessonProgress(string $userId, int $lessonId, int $elapsedTime = 0): array;
 
     /**
      * Lấy thống kê học tập của người dùng
