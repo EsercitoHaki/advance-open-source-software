@@ -101,8 +101,6 @@ class QuestionController extends Controller
     {
         $validated = $request->validate([
             'lesson_id' => 'required|integer',
-            'score' => 'numeric|min:0.01|max:100',
-            'content' => 'nullable|string',
             'question_text' => 'required|string',
             'explanation' => 'nullable|string',
         ]);
@@ -138,8 +136,6 @@ class QuestionController extends Controller
     {
         $validated = $request->validate([
             'lesson_id' => 'integer',
-            'score' => 'numeric|min:0.01|max:100',
-            'content' => 'nullable|string',
             'question_text' => 'string',
             'explanation' => 'nullable|string',
         ]);

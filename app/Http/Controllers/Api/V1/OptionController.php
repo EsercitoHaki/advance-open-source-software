@@ -6,7 +6,7 @@ use App\DTOs\OptionDTO;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateOptionsRequest;
 use App\Http\Requests\OptionRequest;
-use App\Services\OptionServiceInterface;
+use App\Services\Interfaces\OptionServiceInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
