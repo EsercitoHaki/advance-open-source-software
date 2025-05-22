@@ -257,7 +257,8 @@ class UserProgressService implements UserProgressServiceInterface
                     'passed' => $finalScore >= 50, // Giả định rằng điểm đậu là 70%
                     'question_results' => $results,
                     'progress_status' => $userProgress->completion_status,
-                    'streak_info' => $streakInfo
+                    'streak_info' => $streakInfo,
+                    'elapsed_time' => $elapsedTime // Trả về thời gian làm bài
                 ];
             });
         } catch (DataNotFoundException $e) {
@@ -376,10 +377,11 @@ class UserProgressService implements UserProgressServiceInterface
      *
      * @param string $userId
      * @param int $lessonId
+     * @param int $elapsedTime Thời gian đã sử dụng (tính bằng giây)
      * @return array Trả về kết quả tổng hợp của bài học
      * @throws InvalidParamException
      */
-    public function finalizeLessonProgress(string $userId, int $lessonId): array
+    public function finalizeLessonProgress(string $userId, int $lessonId, int $elapsedTime = 0): array
     {
         try {
             // Lấy các câu trả lời đã lưu trong cache
@@ -391,7 +393,7 @@ class UserProgressService implements UserProgressServiceInterface
             }
 
             // Sử dụng phương thức completeLesson hiện có để hoàn thành bài học
-            $result = $this->completeLesson($userId, $lessonId, $userAnswers);
+            $result = $this->completeLesson($userId, $lessonId, $userAnswers, $elapsedTime);
 
             // Xóa dữ liệu tạm trong cache sau khi hoàn thành
             cache()->forget($answersKey);

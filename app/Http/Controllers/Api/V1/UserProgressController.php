@@ -259,14 +259,30 @@ class UserProgressController extends Controller
     /**
      * Hoàn thành bài học sau khi đã nộp tất cả câu trả lời
      *
+     * @param Request $request
      * @param int $lessonId
      * @return JsonResponse
      */
-    public function finalizeLessonProgress(int $lessonId): JsonResponse
+    public function finalizeLessonProgress(Request $request, int $lessonId): JsonResponse
     {
+        $validator = Validator::make($request->all(), [
+            'elapsed_time' => 'nullable|integer|min:0'
+        ], [
+            'elapsed_time.integer' => 'Thời gian phải là số nguyên',
+            'elapsed_time.min' => 'Thời gian không được âm'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first()
+            ], 400);
+        }
+
         try {
             $userId = auth()->user()->user_id;
-            $result = $this->userProgressService->finalizeLessonProgress($userId, $lessonId);
+            $elapsedTime = $request->input('elapsed_time', 0);
+            $result = $this->userProgressService->finalizeLessonProgress($userId, $lessonId, $elapsedTime);
 
             return response()->json([
                 'success' => true,
