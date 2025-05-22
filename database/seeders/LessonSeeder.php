@@ -16,39 +16,44 @@ class LessonSeeder extends Seeder
     {
         // Tạm thời tắt kiểm tra khóa ngoại
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-        
+
         // Xóa dữ liệu cũ để tránh trùng lặp
         Lesson::truncate();
-        
+
         // Bật lại kiểm tra khóa ngoại
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
         // Tạo dữ liệu mẫu cho bài học
         $lessons = [
             [
-                'title' => 'Ngữ pháp tiếng Anh cơ bản',
-                'category' => 'Grammar',
-                'created_date' => '2025-04-10'
-            ],
-            [
-                'title' => 'Từ vựng chủ đề du lịch',
-                'category' => 'Vocabulary',
-                'created_date' => '2025-04-11'
-            ],
-            [
-                'title' => 'Kỹ năng nghe hiểu',
+                'title' => 'Kỹ năng nghe hiểu cơ bản',
                 'category' => 'Listening',
-                'created_date' => '2025-04-12'
+                'created_date' => '2025-04-10',
+                'time_limit' => 600 // 10 phút
             ],
             [
-                'title' => 'Kỹ năng đọc hiểu',
+                'title' => 'Nghe hiểu bài hội thoại',
+                'category' => 'Listening',
+                'created_date' => '2025-04-11',
+                'time_limit' => 600 // 10 phút
+            ],
+            [
+                'title' => 'Kỹ năng đọc hiểu văn bản',
                 'category' => 'Reading',
-                'created_date' => '2025-04-13'
+                'created_date' => '2025-04-12',
+                'time_limit' => 600 // 10 phút
             ],
             [
-                'title' => 'Giao tiếp trong kinh doanh',
-                'category' => 'Vocabulary',
-                'created_date' => '2025-04-14'
+                'title' => 'Đọc hiểu đoạn văn học thuật',
+                'category' => 'Reading',
+                'created_date' => '2025-04-13',
+                'time_limit' => 600 // 10 phút
+            ],
+            [
+                'title' => 'Luyện nghe đoạn hội thoại dài',
+                'category' => 'Listening',
+                'created_date' => '2025-04-14',
+                'time_limit' => 600 // 10 phút
             ],
         ];
 
