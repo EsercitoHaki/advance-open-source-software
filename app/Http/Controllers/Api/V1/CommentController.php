@@ -51,11 +51,17 @@ class CommentController extends Controller
         }
     }
 
-    public function update(Request $request, int $id): JsonResponse
+
+    public function update(int $lessonId, int $commentId, Request $request): JsonResponse
     {
-        $comment = $this->commentService->find($id);
-        if (!$comment || $comment->user_id !== Auth::id()) {
-            return response()->json(['message' => 'Không tìm thấy bình luận hoặc bạn không có quyền sửa.'], 404);
+        $comment = $this->commentService->find($commentId);
+
+        // Kiểm tra xem comment có tồn tại và thuộc về người dùng hiện tại không
+        if (!$comment) {
+            return response()->json(['message' => 'Không tìm thấy bình luận.'], 404);
+        }
+        if ($comment->user_id !== Auth::id()) {
+            return response()->json(['message' => 'Bạn không có quyền sửa bình luận này.'], 403); // 403 Forbidden thay vì 404
         }
 
         $validator = Validator::make($request->all(), [
@@ -66,10 +72,11 @@ class CommentController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $updatedComment = $this->commentService->updateComment($id, $validator->validated());
+
+        $updatedComment = $this->commentService->updateComment($commentId, $validator->validated());
 
         if ($updatedComment) {
-            return response()->json(['message' => 'Bình luận đã được cập nhật.', 'comment' => $updatedComment]);
+            return response()->json(['message' => 'Bình luận đã được cập nhật.', 'comment' => $updatedComment], 200); // Thêm mã 200 OK
         } else {
             return response()->json(['message' => 'Không thể cập nhật bình luận.'], 500);
         }
