@@ -70,10 +70,6 @@ class CheckInService implements CheckInServiceInterface
 
         $checkInDateHistory = $this->checkInRepository->getCheckInDateHistory($user);
 
-        if ($checkInDateHistory->isEmpty()) {
-            throw new AppException('Không có lịch sử điểm danh.');
-        }
-
         return $checkInDateHistory->map(fn($checkin) => [
         'checkin_date' => $checkin->checkin_date,
         ])->toArray();
