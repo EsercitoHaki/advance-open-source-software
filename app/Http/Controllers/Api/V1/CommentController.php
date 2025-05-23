@@ -84,7 +84,16 @@ class CommentController extends Controller
 
     public function destroy(int $lessonId, int $commentId): JsonResponse
     {
-
+        $comment = $this->commentService->find($commentId);
+        $user = Auth::user();
+        if (!$comment) {
+            return response()->json(['message' => 'Không tìm thấy bình luận.'], 404);
+        }
+        // cho admin xóa comment của người khác
+        // nếu không phải admin thì chỉ cho xóa comment của chính mình
+        if ($user->role_id !== 1 && $comment->user_id !== Auth::id()) {
+            return response()->json(['message' => 'Bạn không có quyền xóa bình luận này.'], 403);
+        }
 
         $deleted = $this->commentService->deleteComment($commentId);
 
