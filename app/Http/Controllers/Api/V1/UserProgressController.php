@@ -286,7 +286,7 @@ class UserProgressController extends Controller
             $elapsedTime = $request->input('elapsed_time', 0);
             $result = $this->userProgressService->finalizeLessonProgress($userId, $lessonId, $elapsedTime);
 
-            UserDailyMissionService::recordAction($userId, 'complete_lesson');
+            //UserDailyMissionService::recordAction($userId, 'complete_lesson');
 
             return response()->json([
                 'success' => true,

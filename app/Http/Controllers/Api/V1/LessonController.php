@@ -133,12 +133,14 @@ class LessonController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
-            'category' => 'required|string|in:Grammar,Vocabulary,Listening,Reading'
+            'category' => 'required|string|in:Grammar,Vocabulary,Listening,Reading',
+            'time_limit' => 'required|integer|min:1'
         ], [
             'title.required' => 'Thiếu tiêu đề bài học',
             'title.max' => 'Tiêu đề bài học không được vượt quá 255 ký tự',
             'category.required' => 'Thiếu danh mục bài học',
-            'category.in' => 'Danh mục bài học không hợp lệ'
+            'category.in' => 'Danh mục bài học không hợp lệ',
+            'time_limit.required' => 'Thiếu thời gian làm bài',
         ]);
 
         if ($validator->fails()) {
@@ -149,7 +151,7 @@ class LessonController extends Controller
         }
 
         try {
-            $lessonData = $request->only(['title', 'category']);
+            $lessonData = $request->only(['title', 'category', 'time_limit']);
             $lesson = $this->lessonService->createLesson($lessonData);
 
             return response()->json([
@@ -170,10 +172,12 @@ class LessonController extends Controller
     public function update(Request $request, string $id): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'title' => 'required|string|max:255'
+            'title' => 'required|string|max:255',
+            'time_limit' => 'required|integer'
         ], [
             'title.required' => 'Thiếu tiêu đề bài học',
-            'title.max' => 'Tiêu đề bài học không được vượt quá 255 ký tự'
+            'title.max' => 'Tiêu đề bài học không được vượt quá 255 ký tự',
+            "time_limit.required' => 'Thiếu thời gian làm bài',"
         ]);
 
         if ($validator->fails()) {
@@ -184,7 +188,7 @@ class LessonController extends Controller
         }
 
         try {
-            $updatedLesson = $this->lessonService->updateLesson($id, $request->only('title'));
+            $updatedLesson = $this->lessonService->updateLesson($id, $request->only('title', 'time_limit'));
             return response()->json([
                 'success' => true,
                 'message' => 'Cập nhật bài học thành công',
