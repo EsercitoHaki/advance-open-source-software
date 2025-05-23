@@ -29,6 +29,10 @@ class DatabaseSeeder extends Seeder
         $this->call([
             RoleSeeder::class,
             StoreItemSeeder::class,
+            LessonSeeder::class,
+            QuestionSeeder::class,
+            OptionSeeder::class,
+            MissionSeeder::class
         ]);
         $this->call(LessonSeeder::class);
         $this->call(QuestionSeeder::class);

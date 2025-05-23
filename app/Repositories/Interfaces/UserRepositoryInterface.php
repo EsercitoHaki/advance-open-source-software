@@ -73,4 +73,8 @@ interface UserRepositoryInterface
      * @return Collection
      */
     public function searchUsersByUsername(string $username, int $limit = 10): Collection;
+    
+    public function getUsersWithTotalScore();
+
+    public function findUserWithScore(string $userId);
 }
