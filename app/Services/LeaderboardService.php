@@ -67,13 +67,12 @@ class LeaderboardService implements LeaderboardServiceInterface
     protected function getRankByScore(int $score): string
     {
         return match (true) {
-            $score <= 100 => 'Bronze',
-            $score <= 200 => 'Silver',
-            $score <= 300 => 'Gold',
-            $score <= 400 => 'Platinum',
-            $score <= 500 => 'Diamond',
-            $score <= 600 => 'Master',
-            default => 'Challenger',
+            $score <= 20 => 'Bronze',
+            $score <= 50 => 'Silver',
+            $score <= 100 => 'Gold',
+            $score <= 200 => 'Platinum',
+            $score > 200 => 'Diamond',
+            default => 'Bronze',
         };
     }
 
