@@ -53,18 +53,18 @@ class CommentService implements CommentServiceInterface
         return $this->commentRepository->create($data);
     }
 
-    public function updateComment(int $id, array $data): ?object
+    public function updateComment(int $commentId, array $data): ?object
     {
-        return $this->commentRepository->update($id, $data);
+        return $this->commentRepository->update($commentId, $data);
     }
 
-    public function deleteComment(int $id): bool
+    public function deleteComment(int $commentId): bool
     {
-        return $this->commentRepository->delete($id);
+        return $this->commentRepository->delete($commentId);
     }
 
-    public function find(int $id): ?object
+    public function find(int $commentId): ?object
     {
-        return $this->commentRepository->find($id);
+        return $this->commentRepository->find($commentId);
     }
 }

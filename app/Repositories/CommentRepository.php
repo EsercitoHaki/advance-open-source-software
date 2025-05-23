@@ -39,20 +39,27 @@ class CommentRepository implements CommentRepositoryInterface
         return $this->model->create($data);
     }
 
-    public function find(int $id): ?Comment
+    public function find(int $commentId): ?Comment
     {
-        return $this->model->findOrFail($id);
+        // Đây là đúng, dùng findOrFail sẽ tự động ném 404 nếu không tìm thấy
+        return $this->model->findOrFail($commentId);
     }
 
-    public function update(int $id, array $data): ?Comment
+    public function update(int $commentId, array $data): ?Comment
     {
-        $comment = $this->find($id);
-        $comment->update($data);
+        // Sửa lỗi ở đây: Chỉ truyền ID vào phương thức find của repository
+        $comment = $this->find($commentId); 
+        // Kiểm tra xem comment có tồn tại không trước khi update
+        if ($comment) {
+            $comment->update($data);
+        }
         return $comment;
     }
 
-    public function delete(int $id): bool
+    public function delete(int $commentId): bool
     {
-        return $this->model->destroy($id);
+        
+        return $this->model->destroy($commentId); 
+
     }
 }
