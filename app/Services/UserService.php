@@ -112,7 +112,12 @@ class UserService implements UserServiceInterface
                 'username' => $user->username,
                 'full_name' => $user->full_name ?? '',
                 'avatar' => $user->avatar,
-                'email' => $user->email
+                'email' => $user->email,
+                'gender' => $user->gender,
+                'current_streak' => $user->current_streak,
+                'longest_streak' => $user->longest_streak,
+                'coins' => $user->coins,
+                'created_at' => $user->created_at,
             ];
         })->toArray();
     }

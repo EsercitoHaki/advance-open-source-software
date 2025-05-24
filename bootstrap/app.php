@@ -21,6 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'jwt.auth' => \App\Http\Middleware\JwtMiddleware::class,
+            'admin' => \App\Http\Middleware\AdminMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
@@ -58,4 +59,6 @@ return Application::configure(basePath: dirname(__DIR__))
                 'message' => $e->getMessage(),
             ], 403);
         });
+
+        
     })->create();

@@ -12,8 +12,17 @@ Route::middleware(['jwt.auth'])->group(function () {
         Route::get('/category', [LessonController::class, 'getByCategory']);
         // Lấy bài học theo ID
         Route::get('/{id}', [LessonController::class, 'show']);
-    
     });
     
-   
+});
+
+Route::middleware(['jwt.auth', 'admin'])->group(function () {
+    Route::group(['prefix' => 'lessons'], function () {
+        // Tạo bài học mới
+        Route::post('/', [LessonController::class, 'create']);
+        // Cập nhật bài học
+        Route::put('/{id}', [LessonController::class, 'update']);
+        // Xóa bài học
+        Route::delete('/{id}', [LessonController::class, 'destroy']);
+    });
 });

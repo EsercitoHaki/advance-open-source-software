@@ -45,4 +45,7 @@ interface LessonServiceInterface
      * @return bool
      */
     public function checkLessonExists(string $lessonId): bool;
+
+    public function updateLesson(string $lessonId, array $lessonData): LessonDTO;
+    public function deleteLesson(string $lessonId): bool;
 }

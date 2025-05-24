@@ -28,8 +28,6 @@ class Question extends Model
      */
     protected $fillable = [
         'lesson_id',
-        'score',
-        'content',
         'question_text',
         // đã loại bỏ correct_answer
         'explanation',

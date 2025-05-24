@@ -14,12 +14,14 @@ class LessonDTO implements JsonSerializable
      * @param string|null $title Tiêu đề bài học
      * @param string|null $category Danh mục của bài học
      * @param string|null $createdDate Ngày tạo bài học
+     * @param int|null $timeLimit Thời gian giới hạn của bài học (giây)
      */
     public function __construct(
         public ?string $lessonId = null,
         public ?string $title = null,
         public ?string $category = null,
-        public ?string $createdDate = null
+        public ?string $createdDate = null,
+        public ?int $timeLimit = null
     ) {
     }
 
@@ -35,7 +37,8 @@ class LessonDTO implements JsonSerializable
             lessonId: $lesson->lesson_id,
             title: $lesson->title,
             category: $lesson->category,
-            createdDate: $lesson->created_date
+            createdDate: $lesson->created_date,
+            timeLimit: $lesson->time_limit
         );
     }
 
@@ -50,7 +53,8 @@ class LessonDTO implements JsonSerializable
             'lesson_id' => $this->lessonId,
             'title' => $this->title,
             'category' => $this->category,
-            'created_date' => $this->createdDate
+            'created_date' => $this->createdDate,
+            'time_limit' => $this->timeLimit
         ];
     }
 
@@ -86,7 +90,8 @@ class LessonDTO implements JsonSerializable
             lessonId: $data['lesson_id'] ?? null,
             title: $data['title'] ?? null,
             category: $data['category'] ?? null,
-            createdDate: $data['created_date'] ?? null
+            createdDate: $data['created_date'] ?? null,
+            timeLimit: $data['time_limit'] ?? null
         );
     }
 }

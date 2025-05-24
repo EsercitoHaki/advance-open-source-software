@@ -14,7 +14,14 @@ Route::middleware(['jwt.auth'])->group(function () {
 
         // Lấy danh sách câu hỏi theo bài học
         Route::get('/lesson/{lessonId}', [QuestionController::class, 'getByLessonId']);
+    });
 
+    // Lấy thông tin bài học kèm câu hỏi
+    Route::get('/lessons/{lessonId}/with-questions', [QuestionController::class, 'getLessonWithQuestions']);
+});
+
+Route::middleware(['jwt.auth', 'admin'])->group(function () {
+    Route::group(['prefix' => 'questions'], function () {
         // Tạo câu hỏi mới
         Route::post('/', [QuestionController::class, 'store']);
 
@@ -23,10 +30,8 @@ Route::middleware(['jwt.auth'])->group(function () {
 
         // Xóa câu hỏi
         Route::delete('/{id}', [QuestionController::class, 'destroy']);
+        
         //upload audio
         Route::post('/{questionId}/audio', [AudioController::class, 'uploadAudio']);
     });
-
-    // Lấy thông tin bài học kèm câu hỏi
-    Route::get('/lessons/{lessonId}/with-questions', [QuestionController::class, 'getLessonWithQuestions']);
 });

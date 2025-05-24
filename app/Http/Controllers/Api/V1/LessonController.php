@@ -133,12 +133,14 @@ class LessonController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
-            'category' => 'required|string|in:Grammar,Vocabulary,Listening,Reading'
+            'category' => 'required|string|in:Grammar,Vocabulary,Listening,Reading',
+            'time_limit' => 'required|integer|min:1'
         ], [
             'title.required' => 'Thiếu tiêu đề bài học',
             'title.max' => 'Tiêu đề bài học không được vượt quá 255 ký tự',
             'category.required' => 'Thiếu danh mục bài học',
-            'category.in' => 'Danh mục bài học không hợp lệ'
+            'category.in' => 'Danh mục bài học không hợp lệ',
+            'time_limit.required' => 'Thiếu thời gian làm bài',
         ]);
 
         if ($validator->fails()) {
@@ -149,7 +151,7 @@ class LessonController extends Controller
         }
 
         try {
-            $lessonData = $request->only(['title', 'category']);
+            $lessonData = $request->only(['title', 'category', 'time_limit']);
             $lesson = $this->lessonService->createLesson($lessonData);
 
             return response()->json([
@@ -162,6 +164,69 @@ class LessonController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Đã xảy ra lỗi khi tạo bài học mới',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function update(Request $request, string $id): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|string|max:255',
+            'time_limit' => 'required|integer'
+        ], [
+            'title.required' => 'Thiếu tiêu đề bài học',
+            'title.max' => 'Tiêu đề bài học không được vượt quá 255 ký tự',
+            "time_limit.required' => 'Thiếu thời gian làm bài',"
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first()
+            ], 400);
+        }
+
+        try {
+            $updatedLesson = $this->lessonService->updateLesson($id, $request->only('title', 'time_limit'));
+            return response()->json([
+                'success' => true,
+                'message' => 'Cập nhật bài học thành công',
+                'data' => $updatedLesson
+            ]);
+        } catch (DataNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 404);
+        } catch (\Exception $e) {
+            Log::error('Lỗi khi cập nhật bài học: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Đã xảy ra lỗi khi cập nhật bài học',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function destroy(string $id): JsonResponse
+    {
+        try {
+            $this->lessonService->deleteLesson($id);
+            return response()->json([
+                'success' => true,
+                'message' => 'Xóa bài học thành công'
+            ]);
+        } catch (DataNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 404);
+        } catch (\Exception $e) {
+            Log::error('Lỗi khi xóa bài học: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Đã xảy ra lỗi khi xóa bài học',
                 'error' => $e->getMessage()
             ], 500);
         }

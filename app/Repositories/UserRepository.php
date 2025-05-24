@@ -7,7 +7,7 @@ use App\DTOs\UserDTO;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
-use App\Repositories\Interfaces\UserRepositoryInterface;
+use Illuminate\Support\Facades\DB;
 
 class UserRepository implements UserRepositoryInterface
 {
@@ -76,7 +76,12 @@ class UserRepository implements UserRepositoryInterface
             'username',
             'email',
             'full_name',
-            'avatar'
+            'avatar',
+            'gender',
+            'current_streak',
+            'longest_streak',
+            'coins',
+            'created_at',
         ])->get();
     }
 
@@ -99,6 +104,54 @@ class UserRepository implements UserRepositoryInterface
                 'full_name',
             ])
             ->limit($limit)
+            ->get();
+    }
+
+    public function getUsersWithTotalScore()
+    {
+        return User::select('users.user_id', 'users.username', 'users.avatar', DB::raw('COALESCE(SUM(user_progress.score), 0) as total_score'))
+            ->leftJoin('user_progress', 'users.user_id', '=', 'user_progress.user_id')
+            ->groupBy('users.user_id', 'users.username', 'users.avatar')
+            ->get();
+    }
+
+    public function findUserWithScore(string $userId)
+    {
+        return User::select('users.user_id', 'users.username', 'users.avatar', DB::raw('COALESCE(SUM(user_progress.score), 0) as total_score'))
+            ->leftJoin('user_progress', 'users.user_id', '=', 'user_progress.user_id')
+            ->where('users.user_id', $userId)
+            ->groupBy('users.user_id', 'users.username', 'users.avatar')
+            ->first();
+    }
+
+    public function getFriendIds(string $userId): array
+    {
+        $friends = DB::table('friends')
+            ->where(function ($query) use ($userId) {
+                $query->where('user1_id', $userId)
+                      ->orWhere('user2_id', $userId);
+            })
+            ->get();
+
+        $friendIds = [];
+        foreach ($friends as $friend) {
+            if ($friend->user1_id === $userId) {
+                $friendIds[] = $friend->user2_id;
+            } else {
+                $friendIds[] = $friend->user1_id;
+            }
+        }
+
+        return $friendIds;
+    }
+
+    public function getUsersWithScoreByIds(array $userIds): Collection
+    {
+        return User::select('users.user_id', 'users.username', 'users.avatar', 
+                           DB::raw('COALESCE(SUM(user_progress.score), 0) as total_score'))
+            ->leftJoin('user_progress', 'users.user_id', '=', 'user_progress.user_id')
+            ->whereIn('users.user_id', $userIds)
+            ->groupBy('users.user_id', 'users.username', 'users.avatar')
             ->get();
     }
 }

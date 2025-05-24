@@ -27,7 +27,8 @@ class CheckInService implements CheckInServiceInterface
         }
 
         $role = DB::table('roles')->where('role_id', $user->role_id)->value('role_name');
-        if ($role !== 'student') {
+        
+        if ($role !== 'user') {
             throw new AppException('Chỉ tài khoản student mới có thể điểm danh!');
         }
 
@@ -69,10 +70,6 @@ class CheckInService implements CheckInServiceInterface
         }
 
         $checkInDateHistory = $this->checkInRepository->getCheckInDateHistory($user);
-
-        if ($checkInDateHistory->isEmpty()) {
-            throw new AppException('Không có lịch sử điểm danh.');
-        }
 
         return $checkInDateHistory->map(fn($checkin) => [
         'checkin_date' => $checkin->checkin_date,

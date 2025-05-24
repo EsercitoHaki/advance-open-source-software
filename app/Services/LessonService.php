@@ -7,6 +7,7 @@ use App\Repositories\Interfaces\LessonRepositoryInterface;
 use App\Services\Interfaces\LessonServiceInterface;
 use Illuminate\Support\Collection;
 use App\Exceptions\DataNotFoundException;
+use App\Models\Lesson;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
@@ -140,5 +141,37 @@ class LessonService implements LessonServiceInterface
         return $collection->map(function ($item) {
             return LessonDTO::fromModel($item);
         });
+    }
+
+    public function updateLesson(string $lessonId, array $lessonData): LessonDTO
+    {
+        try {
+            $lesson = $this->lessonRepository->updateLesson($lessonId, $lessonData);
+            if (!$lesson) {
+                throw new DataNotFoundException('Không tìm thấy bài học để cập nhật');
+            }
+            return LessonDTO::fromModel($lesson);
+        } catch (DataNotFoundException $e) {
+            throw $e;
+        } catch (\Exception $e) {
+            Log::error('Lỗi khi cập nhật bài học: ' . $e->getMessage());
+            throw $e;
+        }
+    }
+
+    public function deleteLesson(string $lessonId): bool
+    {
+        try {
+            $deleted = $this->lessonRepository->deleteLesson($lessonId);
+            if (!$deleted) {
+                throw new DataNotFoundException('Không tìm thấy bài học để xóa');
+            }
+             return true;
+        } catch (DataNotFoundException $e) {
+            throw $e;
+        } catch (\Exception $e) {
+            Log::error('Lỗi khi xóa bài học: ' . $e->getMessage());
+            throw $e;
+        }
     }
 }

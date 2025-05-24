@@ -9,6 +9,7 @@ use App\Services\Interfaces\OptionServiceInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Exceptions\DataNotFoundException;
+use Illuminate\Support\Facades\Log;
 
 class QuestionController extends Controller
 {
@@ -101,8 +102,6 @@ class QuestionController extends Controller
     {
         $validated = $request->validate([
             'lesson_id' => 'required|integer',
-            'score' => 'numeric|min:0.01|max:100',
-            'content' => 'nullable|string',
             'question_text' => 'required|string',
             'explanation' => 'nullable|string',
         ]);
@@ -138,8 +137,6 @@ class QuestionController extends Controller
     {
         $validated = $request->validate([
             'lesson_id' => 'integer',
-            'score' => 'numeric|min:0.01|max:100',
-            'content' => 'nullable|string',
             'question_text' => 'string',
             'explanation' => 'nullable|string',
         ]);
@@ -224,6 +221,17 @@ class QuestionController extends Controller
                 'error' => true,
                 'message' => $e->getMessage(),
             ], 404);
+        } catch (\Exception $e) {
+            // Log lỗi khi xảy ra exception
+            Log::error('Error in getLessonWithQuestions: ' . $e->getMessage(), [
+                'lessonId' => $lessonId,
+                'exception' => $e
+            ]);
+
+            return response()->json([
+                'error' => true,
+                'message' => 'Đã xảy ra lỗi khi lấy dữ liệu bài học và câu hỏi.',
+            ], 500);
         }
     }
 }
