@@ -181,12 +181,11 @@ class UserProgressService implements UserProgressServiceInterface
                     throw new DataNotFoundException('Không tìm thấy câu hỏi nào cho bài học này');
                 }
 
-                $totalScore = 0;
-                $maxScore = 0;
+                $totalCorrect = 0;
+                $totalQuestions = $questions->count();
                 $results = [];
 
                 foreach ($questions as $question) {
-                    $maxScore += $question->score;
                     $questionId = $question->question_id;
 
                     // Kiểm tra xem người dùng có trả lời câu hỏi này không
@@ -204,8 +203,9 @@ class UserProgressService implements UserProgressServiceInterface
                         ->exists();
 
                     // Nếu đúng, cộng điểm cho người dùng
-                    $earnedScore = $isCorrect ? $question->score : 0;
-                    $totalScore += $earnedScore;
+                    if ($isCorrect) {
+                        $totalCorrect += 1;
+                    }
 
                     // Lấy thông tin về đáp án đã chọn và đáp án đúng
                     $selectedOption = DB::table('options')
@@ -234,11 +234,11 @@ class UserProgressService implements UserProgressServiceInterface
                         'correct_option_id' => $correctOption->option_id,
                         'correct_option_text' => $correctOption->option_text,
                         'is_correct' => $isCorrect,
-                        'score' => $earnedScore,
+                        'score' => $isCorrect ? 1 : 0,
                         'explanation' => $question->explanation // Luôn trả về giải thích, kể cả khi đúng
                     ];
                 }                // Cập nhật tiến độ học tập
-                $finalScore = $maxScore > 0 ? ($totalScore / $maxScore) * 100 : 0;
+                $finalScore = $totalQuestions > 0 ? ($totalCorrect / $totalQuestions) * 100 : 0;
                 $userProgress = $this->userProgressRepository->updateProgress(
                     $userId,
                     $lessonId,
@@ -253,7 +253,6 @@ class UserProgressService implements UserProgressServiceInterface
                 // Trả về kết quả
                 return [
                     'total_score' => $finalScore,
-                    'max_score' => 100,
                     'passed' => $finalScore >= 50, // Giả định rằng điểm đậu là 70%
                     'question_results' => $results,
                     'progress_status' => $userProgress->completion_status,
@@ -313,8 +312,7 @@ class UserProgressService implements UserProgressServiceInterface
                 ->exists();
 
             // Tính điểm cho câu hỏi này
-            $earnedScore = $isCorrect ? $question->score : 0;
-
+            $earnedScore = $isCorrect ? 1 : 0;
             // Nếu câu trả lời sai, trừ 1 mạng của người dùng
             if (!$isCorrect) {
                 $user = $this->userRepository->getUserById($userId);
