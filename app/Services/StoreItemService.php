@@ -50,10 +50,6 @@ class StoreItemService implements StoreItemServiceInterface
 
         $mascots = $this->storeItemRepository->getMascots($userId); 
 
-        if ($mascots->isEmpty()) {
-            throw new AppException('Không có linh vật nào.');
-        }
-
         return $mascots->map(fn($mascot) => [
             'item_id' => $mascot->item_id,
             'item_name' => $mascot->item_name,
