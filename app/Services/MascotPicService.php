@@ -7,7 +7,6 @@ use App\Repositories\MascotPicRepository;
 use App\Services\Interfaces\MascotPicServiceInterface;
 use App\Exceptions\AppException;
 use App\DTOs\MascotPicDTO;
-use App\Models\MascotPic;
 
 class MascotPicService implements MascotPicServiceInterface
 {
@@ -21,6 +20,7 @@ class MascotPicService implements MascotPicServiceInterface
     public function getMascotPics(int $mascotId): array
     {
         $mascotPics = $this->mascotPicRepository->getMascotPics($mascotId);
+                
         if ($mascotPics->isEmpty()) {
             throw new AppException('Hình ảnh linh vật không tồn tại.');
         }
