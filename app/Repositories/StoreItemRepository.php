@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\StoreItem;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use App\Repositories\Interfaces\StoreItemRepositoryInterface;
 use App\Models\User;
 
@@ -18,7 +19,7 @@ class StoreItemRepository implements StoreItemRepositoryInterface
 
     public function findItemById(int $itemId): ?StoreItem
     {
-        return StoreItem::find($itemId);
+        return StoreItem::where('item_id', $itemId)->first();
     }
 
     public function getStoreMascotItems(string $userId): Collection
@@ -30,7 +31,7 @@ class StoreItemRepository implements StoreItemRepositoryInterface
             })
             ->select(
                 'store_items.*',
-                \DB::raw('CASE WHEN user_purchases.item_id IS NULL THEN 0 ELSE 1 END as is_purchased')
+                DB::raw('CASE WHEN user_purchases.item_id IS NULL THEN 0 ELSE 1 END as is_purchased')
             )
             ->orderBy('is_purchased', 'asc')
             ->get();
