@@ -58,7 +58,7 @@ class UserPurchaseService implements UserPurchaseServiceInterface
                 throw new AppException('Bạn đã mua linh vật này rồi.');
             }
             
-            $active = ($item->item_type === 'Mascot') ? true : null;
+            $active = ($item->item_type === 'Mascot') ? false : null;
 
             $user->coins -= $item->item_price;
             $user->save();
@@ -102,4 +102,25 @@ class UserPurchaseService implements UserPurchaseServiceInterface
 
         return $purchaseHistory->map(fn($userpurchase) => UserPurchaseDTO::fromModel($userpurchase))->toArray();
     }
+
+    // UserPurchaseService.php
+    public function updateMascotActive(string $userId, int $mascotId): array
+    {
+        $purchase = $this->userPurchaseRepository->findByUserIdAndItemId($userId, $mascotId);
+        
+        if (!$purchase) {
+            throw new AppException('Người dùng chưa sở hữu mascot này!');
+        }
+
+        // Đảo ngược trạng thái hiện tại
+        $newActive = $purchase->active ? 0 : 1;
+
+        // Cập nhật trạng thái
+        $this->userPurchaseRepository->updateActiveStatus($purchase->purchase_id, $newActive);
+
+        return [
+            'item_id' => $mascotId,
+            'active' => (bool)$newActive
+        ];
+}
 }

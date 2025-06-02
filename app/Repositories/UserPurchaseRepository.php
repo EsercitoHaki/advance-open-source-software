@@ -25,4 +25,17 @@ class UserPurchaseRepository implements UserPurchaseRepositoryInterface
             ->where('item_id', $itemId)
             ->exists();
     }
+
+    public function findByUserIdAndItemId(string $userId, int $itemId): ?UserPurchase
+    {
+        return UserPurchase::where('user_id', $userId)
+            ->where('item_id', $itemId)
+            ->first();
+    }
+
+    public function updateActiveStatus(int $purchaseId, int $active): void
+    {
+        UserPurchase::where('purchase_id', $purchaseId)
+            ->update(['active' => $active]);
+    }
 }

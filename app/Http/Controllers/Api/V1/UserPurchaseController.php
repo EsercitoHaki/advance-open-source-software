@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Services\UserPurchaseService;
 use App\Exceptions\AppException;
 use Illuminate\Http\Request;
+use App\Exceptions\ExpiredTokenException;
 
 class UserPurchaseController extends Controller
 {
@@ -62,6 +63,36 @@ class UserPurchaseController extends Controller
                 'status' => 'error',
                 'message' => $e->getMessage()
             ], 400);
+        }
+    }
+
+    // UserPurchaseController.php
+    public function updateMascotActive($mascotId)
+    {
+        try {
+            $user = Auth::user();
+            if (!$user) {
+                throw new AppException('Người dùng không hợp lệ hoặc không tồn tại!');
+            }
+
+            $result = $this->userPurchaseService->updateMascotActive($user->user_id, $mascotId);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Cập nhật thành công!',
+                'data' => $result
+            ], 200);
+
+        } catch (ExpiredTokenException $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ], 401);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Đã xảy ra lỗi: ' . $e->getMessage()
+            ], 500);
         }
     }
 }

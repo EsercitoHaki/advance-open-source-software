@@ -53,6 +53,7 @@ class StoreItemService implements StoreItemServiceInterface
         return $mascots->map(fn($mascot) => [
             'item_id' => $mascot->item_id,
             'item_name' => $mascot->item_name,
+            'active' => (bool)$mascot->active
         ])->toArray();
     }
 }

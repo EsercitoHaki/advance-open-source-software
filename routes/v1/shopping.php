@@ -14,4 +14,5 @@ Route::middleware(['jwt.auth'])->group(function () {
     Route::get('/purchase-history', [UserPurchaseController::class, 'getPurchaseHistory']);
     Route::get('/mascot-pics/{mascotId}', [MascotPicController::class, 'getMascotPics']);
     Route::get('/mascot-pics/main/{mascotId}', [MascotPicController::class, 'getMainMascotPic']);
+    Route::put('/mascot/active/{mascotId}', [UserPurchaseController::class, 'updateMascotActive']);
 });

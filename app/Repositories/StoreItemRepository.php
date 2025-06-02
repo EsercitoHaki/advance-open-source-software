@@ -42,10 +42,9 @@ class StoreItemRepository implements StoreItemRepositoryInterface
         return StoreItem::where('item_type', 'Mascot')
             ->join('user_purchases', function ($join) use ($userId) {
                 $join->on('store_items.item_id', '=', 'user_purchases.item_id')
-                    ->where('user_purchases.user_id', '=', $userId)
-                    ->where('user_purchases.active', true);
+                    ->where('user_purchases.user_id', '=', $userId);
             })
-            ->select('store_items.item_id', 'store_items.item_name')
+            ->select('store_items.item_id', 'store_items.item_name', 'user_purchases.active')
             ->get();
     }
 }
