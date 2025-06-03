@@ -65,4 +65,18 @@ class UserDailyMissionRepository implements UserDailyMissionRepositoryInterface
     {
         UserDailyMission::insert($data);
     }
+
+    public function getUserMissionsForAction(string $userId, string $date, string $action): array
+    {
+        return UserDailyMission::with('mission')
+            ->where('user_id', $userId)
+            ->where('date', $date)
+            ->where('is_completed', false)
+            ->whereHas('mission', function($query) use ($action) {
+                $query->where('required_action', $action)
+                      ->where('is_active', true);
+            })
+            ->get()
+            ->all();
+    }
 }

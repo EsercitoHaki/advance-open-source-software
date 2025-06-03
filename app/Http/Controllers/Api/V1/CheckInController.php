@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Services\CheckInService;
+use App\Services\Interfaces\UserDailyMissionServiceInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use App\Exceptions\AppException;
@@ -12,9 +13,14 @@ class CheckInController extends Controller
 {
     protected $checkInService;
 
-    public function __construct(CheckInService $checkInService)
+    protected $userDailyMissionService;
+
+    public function __construct(
+        CheckInService $checkInService,
+        UserDailyMissionServiceInterface $userDailyMissionService)
     {
         $this->checkInService = $checkInService;
+        $this->userDailyMissionService = $userDailyMissionService;
     }
 
     public function checkIn(): JsonResponse
@@ -23,6 +29,8 @@ class CheckInController extends Controller
             $user = Auth::user(); 
     
             $checkInResult = $this->checkInService->checkIn($user);
+
+            $this->userDailyMissionService->recordAction($user->id, 'check_in');
     
             return response()->json([
                 'success' => true,
