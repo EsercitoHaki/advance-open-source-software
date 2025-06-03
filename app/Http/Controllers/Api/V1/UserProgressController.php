@@ -26,6 +26,8 @@ class UserProgressController extends Controller
      */
     protected $streakService;
 
+    protected $userDailyMissionService;
+
     /**
      * Khởi tạo controller với service cần thiết
      * 
@@ -34,10 +36,12 @@ class UserProgressController extends Controller
      */
     public function __construct(
         UserProgressServiceInterface $userProgressService,
-        StreakServiceInterface $streakService
+        StreakServiceInterface $streakService,
+        UserDailyMissionService $userDailyMissionService 
     ) {
         $this->userProgressService = $userProgressService;
         $this->streakService = $streakService;
+        $this->userDailyMissionService = $userDailyMissionService;
     }
 
     /**
@@ -286,7 +290,7 @@ class UserProgressController extends Controller
             $elapsedTime = $request->input('elapsed_time', 0);
             $result = $this->userProgressService->finalizeLessonProgress($userId, $lessonId, $elapsedTime);
 
-            //UserDailyMissionService::recordAction($userId, 'complete_lesson');
+            $this->userDailyMissionService->recordAction($userId, 'complete_lesson');
 
             return response()->json([
                 'success' => true,
